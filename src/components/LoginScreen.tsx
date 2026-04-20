@@ -34,6 +34,10 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
   const [officePosition, setOfficePosition] = useState('');
   const [city, setCity] = useState('');
   const [createdDate, setCreatedDate] = useState('');
+  const [mad, setMad] = useState('');
+  const [creationLocation, setCreationLocation] = useState('');
+  const [district, setDistrict] = useState('');
+  const [postalCode, setPostalCode] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [contractSignatureDate, setContractSignatureDate] = useState('');
   const [maritalStatus, setMaritalStatus] = useState('Célibataire');
@@ -156,6 +160,22 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
           throw new Error(getText('La date de création est obligatoire', 'Creation date is required', 'تاريخ الإنشاء مطلوب'));
         }
 
+        if (role === 'admin' && !mad.trim()) {
+          throw new Error(getText('Le champ MAD est obligatoire', 'MAD field is required', 'حقل MAD مطلوب'));
+        }
+
+        if (role === 'admin' && !creationLocation.trim()) {
+          throw new Error(getText('Le lieu de création est obligatoire', 'Creation location is required', 'مكان الإنشاء مطلوب'));
+        }
+
+        if (role === 'admin' && !district.trim()) {
+          throw new Error(getText('Le quartier est obligatoire', 'District is required', 'الحي مطلوب'));
+        }
+
+        if (role === 'admin' && !postalCode.trim()) {
+          throw new Error(getText('Le code postal est obligatoire', 'Postal code is required', 'الرمز البريدي مطلوب'));
+        }
+
         if (role === 'tech' && !echelon) {
           throw new Error(getText('Veuillez sélectionner un échelon', 'Please select a rank', 'الرجاء تحديد رتبة'));
         }
@@ -201,6 +221,10 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
 
           if (role === 'admin') {
             profileParams.p_created_date = createdDate || null;
+            profileParams.p_mad = mad || null;
+            profileParams.p_creation_location = creationLocation || null;
+            profileParams.p_district = district || null;
+            profileParams.p_postal_code = postalCode || null;
           }
 
           const { error: profileError } = await supabase.rpc('create_user_profile', profileParams);
@@ -1365,6 +1389,129 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
                 />
               </div>
 
+              <div>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  color: darkMode ? '#FFF' : '#2C3E50',
+                  fontSize: '14px',
+                  fontWeight: '600'
+                }}>
+                  {getText('MAD *', 'MAD *', 'MAD *')}
+                </label>
+                <input
+                  type="text"
+                  value={mad}
+                  onChange={(e) => setMad(e.target.value)}
+                  placeholder={getText('Ex: Salimatou', 'Ex: Salimatou', 'مثال: سليماتو')}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: '12px',
+                    border: darkMode ? '2px solid rgba(255,255,255,0.2)' : '2px solid #E0E0E0',
+                    background: darkMode ? 'rgba(255,255,255,0.1)' : '#FFF',
+                    color: darkMode ? '#FFF' : '#2C3E50',
+                    fontSize: '15px',
+                    outline: 'none',
+                    transition: 'border-color 0.3s'
+                  }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = '#00D4FF'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = darkMode ? 'rgba(255,255,255,0.2)' : '#E0E0E0'}
+                />
+              </div>
+
+              <div>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  color: darkMode ? '#FFF' : '#2C3E50',
+                  fontSize: '14px',
+                  fontWeight: '600'
+                }}>
+                  {getText('Lieu de création *', 'Creation location *', 'مكان الإنشاء *')}
+                </label>
+                <input
+                  type="text"
+                  value={creationLocation}
+                  onChange={(e) => setCreationLocation(e.target.value)}
+                  placeholder={getText('Ex: Belgique', 'Ex: Belgium', 'مثال: بلجيكا')}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: '12px',
+                    border: darkMode ? '2px solid rgba(255,255,255,0.2)' : '2px solid #E0E0E0',
+                    background: darkMode ? 'rgba(255,255,255,0.1)' : '#FFF',
+                    color: darkMode ? '#FFF' : '#2C3E50',
+                    fontSize: '15px',
+                    outline: 'none',
+                    transition: 'border-color 0.3s'
+                  }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = '#00D4FF'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = darkMode ? 'rgba(255,255,255,0.2)' : '#E0E0E0'}
+                />
+              </div>
+
+              <div>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  color: darkMode ? '#FFF' : '#2C3E50',
+                  fontSize: '14px',
+                  fontWeight: '600'
+                }}>
+                  {getText('Quartier *', 'District *', 'الحي *')}
+                </label>
+                <input
+                  type="text"
+                  value={district}
+                  onChange={(e) => setDistrict(e.target.value)}
+                  placeholder={getText('Ex: Trooz', 'Ex: Trooz', 'مثال: ترووز')}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: '12px',
+                    border: darkMode ? '2px solid rgba(255,255,255,0.2)' : '2px solid #E0E0E0',
+                    background: darkMode ? 'rgba(255,255,255,0.1)' : '#FFF',
+                    color: darkMode ? '#FFF' : '#2C3E50',
+                    fontSize: '15px',
+                    outline: 'none',
+                    transition: 'border-color 0.3s'
+                  }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = '#00D4FF'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = darkMode ? 'rgba(255,255,255,0.2)' : '#E0E0E0'}
+                />
+              </div>
+
+              <div>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  color: darkMode ? '#FFF' : '#2C3E50',
+                  fontSize: '14px',
+                  fontWeight: '600'
+                }}>
+                  {getText('Code postal *', 'Postal code *', 'الرمز البريدي *')}
+                </label>
+                <input
+                  type="text"
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(e.target.value)}
+                  placeholder={getText('Ex: 4870', 'Ex: 4870', 'مثال: 4870')}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: '12px',
+                    border: darkMode ? '2px solid rgba(255,255,255,0.2)' : '2px solid #E0E0E0',
+                    background: darkMode ? 'rgba(255,255,255,0.1)' : '#FFF',
+                    color: darkMode ? '#FFF' : '#2C3E50',
+                    fontSize: '15px',
+                    outline: 'none',
+                    transition: 'border-color 0.3s'
+                  }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = '#00D4FF'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = darkMode ? 'rgba(255,255,255,0.2)' : '#E0E0E0'}
+                />
+              </div>
             </>
           )}
 
