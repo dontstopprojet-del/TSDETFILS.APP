@@ -1101,6 +1101,7 @@ const OfficeApp = (props: OfficeAppProps) => {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
               {[
+                { icon: '📋', label: translations.contract, value: currentUser?.contractNumber || 'TSD-001' },
                 { icon: '🏢', label: translations.position, value: getPositionLabel() },
                 { icon: '📧', label: 'Email', value: currentUser?.email || '-' },
                 { icon: '📱', label: translations.phone, value: currentUser?.phone || '-' },
