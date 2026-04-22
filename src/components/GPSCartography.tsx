@@ -671,23 +671,23 @@ const GPSCartography = ({ lang, darkMode, onClose }: GPSCartographyProps) => {
 
         const marker = L.marker([prefecture.lat, prefecture.lng], { ... })
           .addTo(mapRef.current!)
-          .bindPopup(`
-            <div style="font-family: system-ui; min-width: 220px;">
-              <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 700; color: #F59E0B;">
-                ${prefecture.name_fr}
-              </h3>
-              ${prefecture.is_capital ? '<div style="font-size: 11px; color: #DC2626; font-weight: 600; margin-bottom: 6px;">📍 Capitale régionale</div>' : ''}
-              <div style="font-size: 12px; color: #64748B; margin-bottom: 4px;">
-                <strong>${t.population}:</strong> ${prefecture.population.toLocaleString()}
-              </div>
-              <div style="font-size: 12px; color: #64748B; margin-bottom: 4px;">
-                <strong>${t.area}:</strong> ${prefecture.area_km2.toLocaleString()} km²
-              </div>
-              <div style="font-size: 11px; color: #94A3B8; margin-top: 6px;">
-               ${prefecture.lat.toFixed(4)}, ${prefecture.lng.toFixed(4)}
-              </div>
-            </div>
-          `);
+         .bindPopup(`
+  <div style="font-family: system-ui; min-width: 220px;">
+    <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 700; color: #F59E0B;">
+      ${prefecture.name_fr}
+    </h3>
+    ${prefecture.is_capital ? '<div style="font-size: 11px; color: #DC2626; font-weight: 600; margin-bottom: 4px;">⭐ Capitale préfectorale</div>' : ''}
+    <div style="font-size: 12px; color: #64748B; margin-bottom: 4px;">
+      <strong>${t.population}:</strong> ${prefecture.population.toLocaleString()}
+    </div>
+    <div style="font-size: 12px; color: #64748B; margin-bottom: 4px;">
+      <strong>${t.area}:</strong> ${prefecture.area_km2.toLocaleString()} km²
+    </div>
+    <div style="font-size: 11px; color: #94A3B8; margin-top: 6px;">
+      ${prefecture.lat.toFixed(4)}, ${prefecture.lng.toFixed(4)}
+    </div>
+  </div>
+`);
 
         markersRef.current.push(marker);
       });
