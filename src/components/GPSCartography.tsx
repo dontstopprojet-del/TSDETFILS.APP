@@ -217,6 +217,7 @@ const GPSCartography = ({ lang, darkMode, onClose }: GPSCartographyProps) => {
     let mapInitialized = false;
 
     const initializeMap = async () => {
+      console.log("VERSION NEW MAP FIX");
       if (!mounted || mapInitialized) return;
 
       console.log('[GPSCartography] Début initialisation carte');
