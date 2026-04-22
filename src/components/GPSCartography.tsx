@@ -268,12 +268,18 @@ const GPSCartography = ({ lang, darkMode, onClose }: GPSCartographyProps) => {
         mapRef.current = map;
         mapInitialized = true;
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           maxZoom: 19
-        }).addTo(map);
+        });
 
-        console.log('[GPSCartography] ✓ Tuiles OSM ajoutées');
+        tileLayer.on('tileerror', (e: any) => {
+          console.error('[GPSCartography] Tile load error:', e.tile?.src, e.error);
+        });
+
+        tileLayer.addTo(map);
+
+        console.log('[GPSCartography] Tuiles OSM ajoutees');
 
         const doInvalidate = () => {
           if (mapRef.current && mounted) {
