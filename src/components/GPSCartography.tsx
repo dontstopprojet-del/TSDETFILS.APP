@@ -1220,7 +1220,7 @@ const GPSCartography = ({ lang, darkMode, onClose }: GPSCartographyProps) => {
               height: '100%',
               minHeight: '600px',
               background: '#E5E7EB',
-              position: 'absolute',
+              position: 'relative',
               top: 0,
               left: 0,
               right: 0,
