@@ -200,28 +200,28 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
         if (signUpError) throw signUpError;
 
         if (authData.user) {
-          const profileParams = {
-            p_user_id: authData.user.id,
-            p_email: email,
-            p_name: name,
-            p_role: role,
-            p_phone: phone || null,
-            p_date_of_birth: dateOfBirth || null,
-            p_contract_signature_date: contractSignatureDate || null,
-            p_marital_status: maritalStatus || null,
-            p_contract_number: contractNumber || null,
-            p_echelon: echelon || null,
-            p_status: status || null,
-            p_office_position: officePosition || null,
-            p_city: city || null,
-            p_created_date: createdDate || null,
-            p_mad: mad || null,
-            p_creation_location: creationLocation || null,
-            p_district: district || null,
-            p_postal_code: postalCode || null
-          };
-
-          const { error: profileError } = await supabase.rpc('create_user_profile', profileParams);
+          const { error: profileError } = await supabase
+            .from('app_users')
+            .upsert({
+              id: authData.user.id,
+              email,
+              name,
+              role,
+              phone: phone || null,
+              date_of_birth: dateOfBirth || null,
+              contract_signature_date: contractSignatureDate || null,
+              marital_status: maritalStatus || null,
+              contract_number: contractNumber || null,
+              echelon: echelon || null,
+              status: status || null,
+              office_position: officePosition || null,
+              city: city || null,
+              created_date: createdDate || null,
+              mad: mad || null,
+              creation_location: creationLocation || null,
+              district: district || null,
+              postal_code: postalCode || null
+            }, { onConflict: 'id' });
 
           if (profileError) throw profileError;
 
