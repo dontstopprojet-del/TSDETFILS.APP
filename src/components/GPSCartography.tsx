@@ -819,7 +819,7 @@ const GPSCartography = ({ lang, darkMode, onClose }: GPSCartographyProps) => {
           popupAnchor: [0, -28]
         });
 
-        const marker = L.marker([commune.latitude, commune.longitude], { icon: customIcon })
+       const marker = L.marker([commune.lat, commune.lng], { icon: customIcon })
           .addTo(mapRef.current!)
           .bindPopup(`
             <div style="font-family: system-ui; min-width: 200px;">
@@ -833,7 +833,7 @@ const GPSCartography = ({ lang, darkMode, onClose }: GPSCartographyProps) => {
                 <strong>${t.population}:</strong> ${commune.population.toLocaleString()}
               </div>
               <div style="font-size: 10px; color: #94A3B8; margin-top: 6px;">
-                ${commune.latitude.toFixed(4)}, ${commune.longitude.toFixed(4)}
+               ${commune.lat.toFixed(4)}, ${commune.lng.toFixed(4)}
               </div>
             </div>
           `);
@@ -842,7 +842,7 @@ const GPSCartography = ({ lang, darkMode, onClose }: GPSCartographyProps) => {
       });
 
       if (filtered.length > 0) {
-        const bounds = L.latLngBounds(filtered.map(c => [c.latitude, c.longitude]));
+       const bounds = L.latLngBounds(filtered.map(c => [c.lat, c.lng]));
         mapRef.current.fitBounds(bounds, { padding: [50, 50] });
       }
     } else if (viewLevel === 'districts') {
