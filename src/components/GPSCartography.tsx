@@ -14,8 +14,8 @@ interface GPSCartographyProps {
 interface UserLocation {
   id: string;
   user_id: string;
-  latitude: number;
-  longitude: number;
+  lat: number;
+  lng: number;
   updated_at: string;
   user_name: string;
   user_role: string;
@@ -27,8 +27,8 @@ interface Region {
   name: string;
   name_fr: string;
   capital: string;
-  latitude: number;
-  longitude: number;
+  lat: number;
+  lng: number;
   population: number;
   area_km2: number;
 }
@@ -39,8 +39,8 @@ interface Prefecture {
   code: string;
   name: string;
   name_fr: string;
-  latitude: number;
-  longitude: number;
+  lat: number;
+  lng: number;
   population: number;
   area_km2: number;
   is_capital: boolean;
@@ -52,8 +52,8 @@ interface Commune {
   code: string;
   name: string;
   type: string;
-  latitude: number;
-  longitude: number;
+  lat: number;
+  lng: number;
   population: number;
 }
 
@@ -63,8 +63,8 @@ interface District {
   code: string;
   name: string;
   type: string;
-  latitude: number;
-  longitude: number;
+  lat: number;
+  lng: number;
   population: number;
 }
 
@@ -76,8 +76,8 @@ interface City {
   name: string;
   name_fr: string;
   type: string;
-  latitude: number;
-  longitude: number;
+  lat: number;
+  lng: number;
   population: number;
 }
 
