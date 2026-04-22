@@ -153,7 +153,7 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
           throw new Error(getText('La ville de résidence est obligatoire pour les clients', 'City of residence is required for clients', 'مدينة الإقامة مطلوبة للعملاء'));
         }
 
-        if (!contractNumber.trim()) {
+        if ((role === 'client' || role === 'tech') && !contractNumber.trim()) {
           throw new Error(getText('Le numéro de contrat est obligatoire', 'Contract number is required', 'رقم العقد مطلوب'));
         }
 
@@ -1339,39 +1339,6 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
                   {getText('Contremaître', 'Foreman', 'رئيس العمال')}
                 </option>
               </select>
-            </div>
-          )}
-
-          {isSignUp && role === 'office' && (
-            <div>
-              <label style={{
-                display: 'block',
-                marginBottom: '8px',
-                color: darkMode ? '#FFF' : '#2C3E50',
-                fontSize: '14px',
-                fontWeight: '600'
-              }}>
-                {getText('Numéro de contrat *', 'Contract Number *', 'رقم العقد *')}
-              </label>
-              <input
-                type="text"
-                value={contractNumber}
-                onChange={(e) => setContractNumber(e.target.value.toUpperCase())}
-                placeholder=""
-                style={{
-                  width: '100%',
-                  padding: '14px',
-                  borderRadius: '12px',
-                  border: darkMode ? '2px solid rgba(255,255,255,0.2)' : '2px solid #E0E0E0',
-                  background: darkMode ? 'rgba(255,255,255,0.1)' : '#FFF',
-                  color: darkMode ? '#FFF' : '#2C3E50',
-                  fontSize: '15px',
-                  outline: 'none',
-                  transition: 'border-color 0.3s'
-                }}
-                onFocus={(e) => e.currentTarget.style.borderColor = '#00D4FF'}
-                onBlur={(e) => e.currentTarget.style.borderColor = darkMode ? 'rgba(255,255,255,0.2)' : '#E0E0E0'}
-              />
             </div>
           )}
 

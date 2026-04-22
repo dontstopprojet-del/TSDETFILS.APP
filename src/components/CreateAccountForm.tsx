@@ -151,7 +151,8 @@ const CreateAccountForm = ({ onClose, onSuccess, darkMode, colors, lang }: Creat
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.password || !formData.date_of_birth || !formData.contract_signature_date || !formData.marital_status) {
+    const needsContractDate = formData.role !== 'admin';
+    if (!formData.name || !formData.email || !formData.password || !formData.date_of_birth || !formData.marital_status || (needsContractDate && !formData.contract_signature_date)) {
       setMessage(t.required);
       return;
     }
@@ -477,7 +478,7 @@ const CreateAccountForm = ({ onClose, onSuccess, darkMode, colors, lang }: Creat
             </div>
           )}
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: formData.role === 'admin' ? '1fr' : '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
             <div>
               <label style={labelStyle}>{t.dateOfBirth} *</label>
               <input
@@ -487,15 +488,17 @@ const CreateAccountForm = ({ onClose, onSuccess, darkMode, colors, lang }: Creat
                 style={inputStyle}
                 />
             </div>
-            <div>
-              <label style={labelStyle}>{t.contractDate} *</label>
-              <input
-                type="date"
-                value={formData.contract_signature_date}
-                onChange={(e) => setFormData(prev => ({ ...prev, contract_signature_date: e.target.value }))}
-                style={inputStyle}
-                />
-            </div>
+            {formData.role !== 'admin' && (
+              <div>
+                <label style={labelStyle}>{t.contractDate} *</label>
+                <input
+                  type="date"
+                  value={formData.contract_signature_date}
+                  onChange={(e) => setFormData(prev => ({ ...prev, contract_signature_date: e.target.value }))}
+                  style={inputStyle}
+                  />
+              </div>
+            )}
           </div>
 
           <div style={{ marginBottom: '15px' }}>
