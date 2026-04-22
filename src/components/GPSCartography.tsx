@@ -279,6 +279,10 @@ const GPSCartography = ({ lang, darkMode, onClose }: GPSCartographyProps) => {
 
         tileLayer.addTo(map);
 
+        setTimeout(() => {
+  map.invalidateSize();
+  console.log('FIX map size');
+}, 300);
         console.log('[GPSCartography] Tuiles OSM ajoutees');
 
         const doInvalidate = () => {
