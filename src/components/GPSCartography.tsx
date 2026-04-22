@@ -669,7 +669,7 @@ const GPSCartography = ({ lang, darkMode, onClose }: GPSCartographyProps) => {
           popupAnchor: [0, -36]
         });
 
-        const marker = L.marker([prefecture.latitude, prefecture.longitude], { icon: customIcon })
+        const marker = L.marker([prefecture.lat, prefecture.lng], { ... })
           .addTo(mapRef.current!)
           .bindPopup(`
             <div style="font-family: system-ui; min-width: 220px;">
@@ -684,7 +684,7 @@ const GPSCartography = ({ lang, darkMode, onClose }: GPSCartographyProps) => {
                 <strong>${t.area}:</strong> ${prefecture.area_km2.toLocaleString()} km²
               </div>
               <div style="font-size: 11px; color: #94A3B8; margin-top: 6px;">
-                ${prefecture.latitude.toFixed(4)}, ${prefecture.longitude.toFixed(4)}
+               ${prefecture.lat.toFixed(4)}, ${prefecture.lng.toFixed(4)}
               </div>
             </div>
           `);
@@ -693,7 +693,7 @@ const GPSCartography = ({ lang, darkMode, onClose }: GPSCartographyProps) => {
       });
 
       if (filtered.length > 0) {
-        const bounds = L.latLngBounds(filtered.map(p => [p.latitude, p.longitude]));
+       const bounds = L.latLngBounds(filtered.map(p => [p.lat, p.lng]));
         mapRef.current.fitBounds(bounds, { padding: [50, 50] });
       }
     } else if (viewLevel === 'cities') {
