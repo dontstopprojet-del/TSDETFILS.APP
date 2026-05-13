@@ -418,6 +418,35 @@ const EnhancedInvoiceManager: React.FC<EnhancedInvoiceManagerProps> = ({ userRol
     try {
       setLoading(true);
 
+   const emailResponse = await fetch(
+  "https://wwzenpgopftcqhhczmni.supabase.co/functions/v1/send-invoice-email",
+  {
+    method: "POST",
+   headers: {
+  "Content-Type": "application/json",
+  apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+},
+    body: JSON.stringify({
+      clientEmail: sendEmail,
+      invoiceNumber: invoiceToSend.invoice_number,
+      clientName: invoiceToSend.client_name,
+      amount: invoiceToSend.amount || 0,
+      dueDate: invoiceToSend.due_date || "",
+    }),
+  }
+);
+
+if (!emailResponse.ok) {
+  const errorText = await emailResponse.text();
+  console.error("Erreur Edge Function:", errorText);
+  alert("Erreur email : " + errorText);
+  return;
+}
+
+const result = await emailResponse.json();
+console.log("EMAIL OK :", result);
+
       const { error: updateError } = await supabase
         .from('invoices')
         .update({

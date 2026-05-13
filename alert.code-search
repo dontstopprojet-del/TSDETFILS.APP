@@ -1,0 +1,1083 @@
+# Query: alert
+# ContextLines: 1
+
+341 results - 66 files
+
+DEPLOYMENT.md:
+  149  - Monitoring des requêtes lentes
+  150: - Alertes sur erreurs critiques
+  151  
+
+GUIDE_UTILISATION.md:
+  197  
+  198:       alert('Stock créé avec succès!');
+  199      } catch (error) {
+  200:       alert('Erreur: ' + error.message);
+  201      }
+
+NOUVEAUX_MODULES_INTEGRES.md:
+   19  - ✅ Liste des produits avec quantités
+   20: - ✅ Alertes de stock faible (quand quantité ≤ seuil minimum)
+   21  - ✅ Historique des mouvements (entrée/sortie)
+
+  169     - Enregistrer les entrées/sorties
+  170:    - Alertes automatiques pour stock faible
+  171  
+
+  270  - Graphiques de progression
+  271: - Alertes visuelles
+  272  
+
+  296  ✅ Gestion complète de planning
+  297: ✅ Gestion de stock avec alertes
+  298  ✅ Facturation automatique
+
+PRODUCTION_READY.md:
+  140  - ✅ Affectation des techniciens
+  141: - ✅ Gestion des stocks avec alertes
+  142  - ✅ Facturation et suivi
+
+  149  - ✅ Paramètres système
+  150: - ✅ Envoi d'alertes
+  151  - ✅ Anniversaires d'employés
+
+README.md:
+   18  - ✅ Affectation des techniciens
+   19: - ✅ Gestion des stocks et alertes
+   20  - ✅ Facturation et suivi des paiements
+
+   28  - ✅ Paramètres système
+   29: - ✅ Envoi d'alertes
+   30  - ✅ Gestion des anniversaires
+
+  134  - **work_shifts** : Pointages
+  135: - **admin_alerts** : Alertes admin
+  136  - **admin_settings** : Paramètres système
+
+  165  | Paramètres | ❌ | ❌ | ❌ | ✅ |
+  166: | Alertes | ❌ | Reçoit | Reçoit | Envoie |
+  167  
+
+SECURITY_AUDIT_FINAL_RESOLUTION.md:
+  314     - Custom metrics
+  315:    - Alerting automatique
+  316  
+
+UNUSED_INDEXES_EXPLANATION.md:
+  172  ### Tables Principales (23 index)
+  173: 1. `idx_admin_alerts_created_by` - admin_alerts(created_by)
+  174  2. `idx_admin_settings_updated_by` - admin_settings(updated_by)
+
+src/components/AdminDashboardEnhanced.tsx:
+   12  import BirthdayManager from './BirthdayManager';
+   13: import AlertsManager from './AlertsManager';
+   14  import DailyNotes from './DailyNotes';
+
+   55    | 'notes'
+   56:   | 'alerts'
+   57    | 'birthdays'
+
+  301  
+  302:   if (activeModule === 'alerts') {
+  303      return moduleWrapper(
+  304        '',
+  305:       <AlertsManager
+  306          userId={currentUser?.id}
+
+  553      { id: 'notes' as ActiveModule, icon: '📝', label: lang === 'fr' ? 'Notes du Jour' : 'Daily Notes' },
+  554:     { id: 'alerts' as ActiveModule, icon: '🔔', label: lang === 'fr' ? 'Alertes' : 'Alerts' },
+  555      { id: 'birthdays' as ActiveModule, icon: '🎂', label: lang === 'fr' ? 'Anniversaires' : 'Birthdays' },
+
+src/components/AlertsManager.tsx:
+    2  import { supabase } from '../lib/supabase';
+    3: import { useRealtimeAlerts, useRealtimeUsers } from '../hooks/useRealtimeSync';
+    4  
+    5: interface AlertsManagerProps {
+    6    userId: string;
+
+   11  
+   12: export default function AlertsManager({ userId, userRole, colors, onBack }: AlertsManagerProps) {
+   13:   const [alerts, setAlerts] = useState<any[]>([]);
+   14    const [users, setUsers] = useState<any[]>([]);
+
+   16    const [selectedRecipient, setSelectedRecipient] = useState('');
+   17:   const [alertType, setAlertType] = useState('mission');
+   18    const [title, setTitle] = useState('');
+
+   21  
+   22:   const loadAlerts = useCallback(async () => {
+   23      const query = userRole === 'admin'
+   24:       ? supabase.from('admin_alerts').select('*, recipient:app_users!recipient_id(name, email)')
+   25:       : supabase.from('admin_alerts').select('*').eq('recipient_id', userId);
+   26  
+
+   28      if (data) {
+   29:       setAlerts(data);
+   30        const unread = data.filter(a => !a.is_read && a.recipient_id === userId).length;
+
+   44    useEffect(() => {
+   45:     loadAlerts();
+   46      if (userRole === 'admin') {
+
+   48      }
+   49:   }, [loadAlerts, loadUsers, userRole]);
+   50  
+   51:   useRealtimeAlerts(loadAlerts, userRole === 'admin' ? undefined : userId);
+   52    useRealtimeUsers(loadUsers);
+   53  
+   54:   const createAlert = async () => {
+   55      if (!selectedRecipient || !title || !message) {
+   56:       alert('Veuillez remplir tous les champs');
+   57        return;
+
+   59  
+   60:     const { error } = await supabase.from('admin_alerts').insert({
+   61        recipient_id: selectedRecipient,
+   62:       alert_type: alertType,
+   63        title,
+
+   72        setMessage('');
+   73:       loadAlerts();
+   74:       alert('Alerte envoyée avec succès');
+   75      }
+
+   79      if (!title || !message) {
+   80:       alert('Veuillez remplir le titre et le message');
+   81        return;
+
+   83  
+   84:     if (!confirm('Envoyer cette alerte à tous les utilisateurs ?')) {
+   85        return;
+
+   87  
+   88:     const alertsToInsert = users.map(user => ({
+   89        recipient_id: user.id,
+   90:       alert_type: alertType,
+   91        title,
+
+   95  
+   96:     const { error } = await supabase.from('admin_alerts').insert(alertsToInsert);
+   97  
+
+  102        setMessage('');
+  103:       loadAlerts();
+  104:       alert(`Alerte envoyée à ${users.length} utilisateurs avec succès`);
+  105      }
+
+  107  
+  108:   const markAsRead = async (alertId: string) => {
+  109      await supabase
+  110:       .from('admin_alerts')
+  111        .update({ is_read: true })
+  112:       .eq('id', alertId);
+  113:     loadAlerts();
+  114    };
+  115  
+  116:   const deleteAlert = async (alertId: string) => {
+  117:     if (confirm('Supprimer cette alerte ?')) {
+  118:       await supabase.from('admin_alerts').delete().eq('id', alertId);
+  119:       loadAlerts();
+  120      }
+
+  122  
+  123:   const getAlertIcon = (type: string) => {
+  124      switch (type) {
+
+  165              <h2 style={{ color: colors.primary, margin: 0, fontSize: '24px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  166:               🔔 Alertes
+  167                {unreadCount > 0 && userRole !== 'admin' && (
+
+  210            }}>
+  211:             <h3 style={{ color: colors.text, marginBottom: '15px', fontWeight: 'bold' }}>Créer une alerte</h3>
+  212  
+
+  241                <label style={{ display: 'block', color: colors.text, marginBottom: '8px', fontWeight: 'bold', fontSize: '14px' }}>
+  242:                 Type d'alerte
+  243                </label>
+
+  247                      key={type}
+  248:                     onClick={() => setAlertType(type)}
+  249                      style={{
+
+  251                        borderRadius: '12px',
+  252:                       border: alertType === type ? `2px solid ${colors.primary}` : `2px solid ${colors.light}`,
+  253:                       background: alertType === type ? colors.primary + '20' : '#FFF',
+  254                        cursor: 'pointer',
+
+  257                        textTransform: 'capitalize',
+  258:                       fontWeight: alertType === type ? 'bold' : 'normal'
+  259                      }}
+  260                    >
+  261:                     {getAlertIcon(type)}<br/>{type}
+  262                    </button>
+
+  273                  onChange={(e) => setTitle(e.target.value)}
+  274:                 placeholder="Titre de l'alerte"
+  275                  style={{
+
+  294                  onChange={(e) => setMessage(e.target.value)}
+  295:                 placeholder="Message de l'alerte"
+  296                  style={{
+
+  327                  <button
+  328:                   onClick={createAlert}
+  329                    disabled={!selectedRecipient || !title || !message}
+
+  365          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+  366:           {alerts.length === 0 ? (
+  367              <div style={{
+
+  372                <span style={{ fontSize: '64px', display: 'block', marginBottom: '15px' }}>🔔</span>
+  373:               <div style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '8px' }}>Aucune alerte</div>
+  374:               <div style={{ fontSize: '14px' }}>Vous n'avez pas encore reçu d'alertes</div>
+  375              </div>
+  376            ) : (
+  377:             alerts.map(alert => (
+  378                <div
+  379:                 key={alert.id}
+  380                  style={{
+  381:                   background: alert.is_read ? colors.light : colors.secondary + '15',
+  382                    borderRadius: '12px',
+  383                    padding: '16px',
+  384:                   border: alert.is_read ? `1px solid ${colors.light}` : `2px solid ${colors.secondary}`,
+  385:                   boxShadow: alert.is_read ? 'none' : '0 4px 12px rgba(0,0,0,0.08)'
+  386                  }}
+
+  391                        <span style={{ fontSize: '28px', marginRight: '12px' }}>
+  392:                         {getAlertIcon(alert.alert_type)}
+  393                        </span>
+
+  395                          <h3 style={{ margin: 0, color: colors.text, fontSize: '16px', fontWeight: 'bold' }}>
+  396:                           {alert.title}
+  397                          </h3>
+
+  403                          }}>
+  404:                           {new Date(alert.created_at).toLocaleDateString('fr-FR', {
+  405                              day: '2-digit',
+
+  410                            })}
+  411:                           {userRole === 'admin' && alert.recipient && (
+  412:                             <> • {alert.recipient.name}</>
+  413                            )}
+
+  417                      <p style={{ margin: '0 0 0 40px', color: colors.text, fontSize: '14px', lineHeight: '1.5' }}>
+  418:                       {alert.message}
+  419                      </p>
+
+  421                    <div style={{ display: 'flex', gap: '8px', marginLeft: '15px' }}>
+  422:                     {!alert.is_read && userRole !== 'admin' && (
+  423                        <button
+  424:                         onClick={() => markAsRead(alert.id)}
+  425                          style={{
+
+  440                        <button
+  441:                         onClick={() => deleteAlert(alert.id)}
+  442                          style={{
+
+src/components/AppointmentBooking.tsx:
+  118  
+  119:       alert(t.success);
+  120        if (onSuccess) onSuccess();
+
+src/components/AppointmentManager.tsx:
+  181        fetchAppointments();
+  182:       alert('Rendez-vous mis à jour avec succès');
+  183      } catch (error) {
+  184        console.error('Erreur lors de la mise à jour:', error);
+  185:       alert('Erreur lors de la mise à jour du rendez-vous');
+  186      }
+
+src/components/AuthenticatedQuoteForm.tsx:
+  187      if (totalImages > 5) {
+  188:       alert(t.maxPhotos);
+  189        return;
+
+  213      if (!navigator.geolocation) {
+  214:       alert(t.locationError);
+  215        return;
+
+  229        (_error) => {
+  230:         alert(t.locationError);
+  231          setLocationLoading(false);
+
+  337        } else {
+  338:         alert(t.successMessage);
+  339          if (onSuccess) onSuccess();
+
+src/components/AuthenticatedQuoteTracker.tsx:
+  130  
+  131:       alert(texts[lang].successAccept);
+  132        fetchQuotes();
+
+  135        console.error('Erreur:', err);
+  136:       alert(texts[lang].errorAction);
+  137      }
+
+  151  
+  152:       alert(texts[lang].successReject);
+  153        fetchQuotes();
+
+  156        console.error('Erreur:', err);
+  157:       alert(texts[lang].errorAction);
+  158      }
+
+  886              setAppointmentQuote(null);
+  887:             alert(texts[lang].successAccept);
+  888            }}
+
+src/components/BirthdayManager.tsx:
+  47      if (!formData.person_name.trim() || !formData.birthday_date) {
+  48:       alert('Veuillez remplir tous les champs');
+  49        return;
+
+src/components/BroadcastBanner.tsx:
+  21    promotion: { icon: '🎉', gradient: 'linear-gradient(135deg, #059669, #10b981)', border: '#059669' },
+  22:   alert: { icon: '🚨', gradient: 'linear-gradient(135deg, #dc2626, #ef4444)', border: '#dc2626' },
+  23    info: { icon: 'ℹ️', gradient: 'linear-gradient(135deg, #2563eb, #3b82f6)', border: '#2563eb' },
+
+src/components/BroadcastManager.tsx:
+   27    { value: 'promotion', label: 'Promotion', labelEn: 'Promotion', icon: '🎉' },
+   28:   { value: 'alert', label: 'Alerte', labelEn: 'Alert', icon: '🚨' },
+   29    { value: 'info', label: 'Information', labelEn: 'Info', icon: 'ℹ️' },
+
+  163      if (file.size > 5 * 1024 * 1024) {
+  164:       alert(fr ? 'Image trop grande (max 5 Mo)' : 'Image too large (max 5 MB)');
+  165        return;
+
+  173          console.error('Upload error:', error);
+  174:         alert(fr ? 'Erreur lors de l\'envoi de l\'image' : 'Error uploading image');
+  175        } else {
+
+  180        console.error('Upload error:', err);
+  181:       alert(fr ? 'Erreur lors de l\'envoi de l\'image' : 'Error uploading image');
+  182      }
+
+src/components/CEODashboard.tsx:
+  973      { id: 'notes', icon: '📝', label: 'Notes', gradient: 'linear-gradient(135deg, #4f46e5, #818cf8)' },
+  974:     { id: 'alerts', icon: '🔔', label: lang === 'fr' ? 'Alertes' : 'Alerts', gradient: 'linear-gradient(135deg, #ea580c, #fb923c)' },
+  975      { id: 'birthdays', icon: '🎂', label: lang === 'fr' ? 'Anniversaires' : 'Birthdays', gradient: 'linear-gradient(135deg, #db2777, #f472b6)' },
+
+src/components/ClientInvoicesScreen.tsx:
+  88  
+  89:       alert(lang === 'fr' ? 'Preuve de paiement envoyée avec succès !' : lang === 'en' ? 'Payment proof uploaded successfully!' : 'تم تحميل إثبات الدفع بنجاح!');
+  90  
+
+  98        console.error('Error uploading proof:', error);
+  99:       alert(lang === 'fr' ? 'Erreur lors de l\'envoi de la preuve' : lang === 'en' ? 'Error uploading proof' : 'خطأ في تحميل الإثبات');
+  100      } finally {
+
+src/components/ClientQuoteTracker.tsx:
+  107  
+  108:       alert(texts[lang].successAccept);
+  109        setQuote({ ...quote, status: 'accepted' });
+
+  112        console.error('Erreur:', err);
+  113:       alert(texts[lang].errorAction);
+  114      }
+
+  130  
+  131:       alert(texts[lang].successReject);
+  132        setQuote({ ...quote, status: 'rejected' });
+
+  135        console.error('Erreur:', err);
+  136:       alert(texts[lang].errorAction);
+  137      }
+
+src/components/ContactPage.tsx:
+  102      if (!name || !email || !phone || !message) {
+  103:       alert(t.errorAllFields);
+  104        return;
+
+  122  
+  123:       alert(t.successMessage);
+  124  
+
+  131        console.error('Erreur:', error);
+  132:       alert(t.errorSending);
+  133      } finally {
+
+src/components/DailyNotes.tsx:
+  106        await loadNotes();
+  107:       alert('Note enregistrée avec succès');
+  108      } catch (err) {
+  109        console.error('Error saving note:', err);
+  110:       alert('Erreur lors de l\'enregistrement');
+  111      }
+
+src/components/DevisForm.tsx:
+  199      if (totalImages > 5) {
+  200:       alert(t.maxPhotos);
+  201        return;
+
+  237      if (!navigator.geolocation) {
+  238:       alert(t.locationError);
+  239        return;
+
+  272          console.error('Geolocation error:', error);
+  273:         alert(t.locationError);
+  274          setLocationLoading(false);
+
+  369        } else {
+  370:         alert(t.successMessage);
+  371  
+
+src/components/EnhancedInvoiceManager.tsx:
+  261      if ((!formData.client_id && !formData.client_name) || !formData.amount || !formData.due_date) {
+  262:       alert('Tous les champs obligatoires doivent être remplis');
+  263        return;
+
+  270      if (totalPercent !== 100) {
+  271:       alert(`Le total des pourcentages doit être égal à 100% (actuel: ${totalPercent}%)`);
+  272        return;
+
+  309  
+  310:         alert('Facture modifiée avec succès');
+  311        } else {
+
+  321  
+  322:         alert('Facture créée avec succès');
+  323        }
+
+  341        const errorMessage = error?.message || 'Erreur lors de la sauvegarde de la facture';
+  342:       alert(`Erreur: ${errorMessage}`);
+  343      } finally {
+
+  363        if (error) throw error;
+  364:       alert('Statut mis à jour');
+  365        loadInvoices();
+
+  367        console.error('Error updating status:', error);
+  368:       alert('Erreur lors de la mise à jour');
+  369      } finally {
+
+  398        console.error('Error updating tranche:', error);
+  399:       alert('Erreur lors de la mise à jour de la tranche');
+  400      } finally {
+
+  413      if (!invoiceToSend || !sendEmail) {
+  414:       alert('Veuillez entrer une adresse email');
+  415        return;
+
+  472       await fetch(
+  "https://sfvzcnuhnmsozkiczsiv.supabase.co/functions/v1/send-invoice-email",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+    },
+    body: JSON.stringify({
+      clientEmail: sendEmail,
+      invoiceNumber: invoiceToSend.invoice_number,
+      clientName: invoiceToSend.client_name,
+      amount: invoiceToSend.total_amount,
+    }),
+  }
+);
+
+  473:       alert(`Facture ${invoiceToSend.invoice_number} envoyée à ${sendEmail} et notifiée dans l'application`);
+  474        setShowSendModal(false);
+
+  479        console.error('Error sending invoice:', error);
+  480:       alert('Erreur lors de l\'envoi de la facture');
+  481      } finally {
+
+  515  
+  516:       alert('Facture supprimée avec succès');
+  517        loadInvoices();
+
+  519        console.error('Error deleting invoice:', error);
+  520:       alert('Erreur lors de la suppression de la facture');
+  521      } finally {
+
+src/components/EnhancedMessagingSystem.tsx:
+  350        console.error('Error uploading file:', error);
+  351:       alert(lang === 'fr' ? 'Erreur lors de l\'envoi du fichier' : 'Error uploading file');
+  352      } finally {
+
+  391        console.error('Error starting recording:', error);
+  392:       alert(lang === 'fr' ? 'Impossible d\'accéder au microphone' : 'Cannot access microphone');
+  393      }
+
+  428        console.error('Error uploading audio:', error);
+  429:       alert(lang === 'fr' ? 'Erreur lors de l\'envoi de l\'audio' : 'Error uploading audio');
+  430      } finally {
+
+src/components/EnhancedPlanning.tsx:
+  422      if (!formData.chantier_id || selectedTechnicians.length === 0 || !formData.scheduled_date) {
+  423:       alert('Veuillez sélectionner un chantier, au moins un technicien et une date');
+  424        return;
+
+  455  
+  456:       alert(`Planning créé avec ${selectedTechnicians.length} technicien(s)`);
+  457        setShowForm(false);
+
+  468        console.error('Error creating planning:', error);
+  469:       alert('Erreur lors de la création du planning');
+  470      } finally {
+
+src/components/ExpenseTracker.tsx:
+  163      if (file.size > 5 * 1024 * 1024) {
+  164:       alert('Le fichier ne doit pas depasser 5 Mo');
+  165        return;
+
+  212      if (!formData.project_id || !formData.amount || !formData.description) {
+  213:       alert('Tous les champs obligatoires doivent etre remplis');
+  214        return;
+
+  245          if (error) throw error;
+  246:         alert('Depense modifiee avec succes');
+  247        } else {
+
+  267  
+  268:         alert('Depense enregistree avec succes');
+  269        }
+
+  274        console.error('Error saving expense:', error);
+  275:       alert('Erreur lors de l\'enregistrement');
+  276      } finally {
+
+  302        if (error) throw error;
+  303:       alert('Depense supprimee');
+  304        setConfirmDelete(null);
+
+  307        console.error('Error deleting expense:', error);
+  308:       alert('Erreur lors de la suppression');
+  309      } finally {
+
+src/components/IncidentForm.tsx:
+   75      if (images.length >= 4) {
+   76:       alert(lang === 'fr' ? 'Maximum 4 photos' : 'Maximum 4 photos');
+   77        return;
+
+   94      if (!formData.title.trim() || !formData.description.trim()) {
+   95:       alert(t.required);
+   96        return;
+
+  116        if (error) {
+  117:         alert(t.error);
+  118          console.error('Error submitting incident:', error);
+  119        } else {
+  120:         alert(t.success);
+  121          onBack();
+
+  124        console.error('Error:', err);
+  125:       alert(t.error);
+  126      } finally {
+
+src/components/IntelligentChatbot.tsx:
+  181        response: lang === 'fr'
+  182: ⟪ 466 characters skipped ⟫onnalisé\n• Historique complet projets\n• Factures téléchargeables PDF\n• Documents archivés\n\n💬 Communication:\n• Chat direct techniciens\n• Messagerie sécurisée\n• Notifications personnalisées\n• Alertes importantes\n\n📊 Suivi en temps réel:\n• Position GPS technicien\n• Photos chantier live\n• Progression en %\n• Estimation arrivée\n\n💰 Avantages financiers:\n• Devis sauvegardés\n• Remises fidélité progressives\n• Paiement en ligne sécurisé\n• Historique paiements\n\n⭐ Programme VIP:\n• -5% dès 3 interventions\n• -10% après 5 projets\n• -15% statut VIP (10+ projets)\n• Priorité interventions\n• Technicien dédié\n\n🔒 SÉCURITÉ:\n• Données cryptées SSL\n• Conformité RGPD\n• Confidentialité garantie\n• Suppression compte possible\n\n📱 MULTI-PLATEFORME:\n• Application iOS/Android\n• Site web responsive\n• Synchronisation automatique'
+  183: ⟪ 423 characters skipped ⟫ dashboard\n• Complete project history\n• Downloadable PDF invoices\n• Archived documents\n\n💬 Communication:\n• Direct technician chat\n• Secure messaging\n• Personalized notifications\n• Important alerts\n\n📊 Real-time tracking:\n• Technician GPS position\n• Live site photos\n• % progress\n• Arrival estimate\n\n💰 Financial benefits:\n• Saved quotes\n• Progressive loyalty discounts\n• Secure online payment\n• Payment history\n\n⭐ VIP Program:\n• -5% from 3 services\n• -10% after 5 projects\n• -15% VIP status (10+ projects)\n• Priority services\n• Dedicated technician\n\n🔒 SECURITY:\n• SSL encrypted data\n• GDPR compliance\n• Guaranteed confidentiality\n• Account deletion possible\n\n📱 MULTI-PLATFORM:\n• iOS/Android app\n• Responsive website\n• Automatic sync',
+  184        keywords: ['compte', 'inscription', 'inscrire', 'creer', 'account', 'sign up', 'register', 'membre'],
+
+  189        response: lang === 'fr'
+  190: ⟪ 739 characters skipped ⟫n\n✅ Instantané:\n• Email de confirmation\n• SMS récapitulatif\n• Ajout calendrier automatique\n\n✅ Rappels:\n• 24h avant: Email\n• 3h avant: SMS\n• 30 min avant: Notification\n• Technicien en route: Alerte\n\n🔄 MODIFICATIONS:\n\n• Reprogrammer: Jusqu\'à 6h avant\n• Annuler: Jusqu\'à 12h avant\n• Reporter: Sans frais\n• Urgence: Intervention immédiate possible\n\n💰 TARIFICATION:\n\n• RDV standard: Gratuit\n• Deplacement payant (a partir de 120 000 GNF)\n• Devis gratuit\n• Paiement apres travaux\n\n👨‍🔧 TECHNICIEN ASSIGNÉ:\n• Profil visible après confirmation\n• Note et avis clients\n• Spécialités\n• Contact direct possible'
+  191: ⟪ 692 characters skipped ⟫\n📱 CONFIRMATIONS:\n\n✅ Instant:\n• Confirmation email\n• Summary SMS\n• Auto calendar add\n\n✅ Reminders:\n• 24h before: Email\n• 3h before: SMS\n• 30 min before: Notification\n• Technician on way: Alert\n\n🔄 CHANGES:\n\n• Reschedule: Up to 6h before\n• Cancel: Up to 12h before\n• Postpone: No fee\n• Emergency: Immediate intervention possible\n\n💰 PRICING:\n\n• Standard appointment: Free\n• Travel fee paid (from 120,000 GNF)\n• Free quote\n• Payment after work\n\n👨‍🔧 ASSIGNED TECHNICIAN:\n• Profile visible after confirmation\n• Customer ratings\n• Specialties\n• Direct contact possible',
+  192        keywords: ['rendez-vous', 'rdv', 'reservation', 'reserver', 'appointment', 'booking', 'date', 'quand'],
+
+src/components/LegalTermsScreen.tsx:
+   18      loading: 'Chargement...',
+   19:     alertMessage: 'Vous devez approuver les mentions légales pour continuer',
+   20      readWarning: 'Veuillez lire attentivement avant de signer',
+
+   62      loading: 'Loading...',
+   63:     alertMessage: 'You must approve the legal terms to continue',
+   64      readWarning: 'Please read carefully before signing',
+
+  134      if (!approved) {
+  135:       alert(t.alertMessage);
+  136        return;
+
+src/components/OfficeApp.tsx:
+     4  import DailyNotes from './DailyNotes';
+     5: import AlertsManager from './AlertsManager';
+     6  import LegalTermsScreen from './LegalTermsScreen';
+
+    61    const [showDailyNotes, setShowDailyNotes] = useState(false);
+    62:   const [showAlerts, setShowAlerts] = useState(false);
+    63    const [showAdminSettings, setShowAdminSettings] = useState(false);
+
+   222      adminSettings: 'Parametres Admin',
+   223:     alerts: 'Alertes',
+   224  
+
+   364      adminSettings: 'Admin Settings',
+   365:     alerts: 'Alerts',
+   366  
+
+   446  
+   447:   if (showAlerts) {
+   448:     return <AlertsManager userId={currentUser?.id} userRole="office" colors={C} onBack={() => setShowAlerts(false)} />;
+   449    }
+
+  1193                { icon: '🎂', label: translations.birthdays, action: () => setShowBirthdays(true) },
+  1194:               { icon: '🔔', label: translations.alerts, action: () => setShowAlerts(true) },
+  1195              ].map((item, idx) => (
+
+  1936            { icon: '❓', label: 'FAQ', action: () => setScreen('faq') },
+  1937:           { icon: '🔔', label: translations.alerts, action: () => setShowAlerts(true) },
+  1938          ].map((item, idx) => (
+
+src/components/ProjectValidationManager.tsx:
+   85        console.error('Error validating chantier:', error);
+   86:       alert('Erreur lors de la validation');
+   87      }
+
+  104        console.error('Error rejecting chantier:', error);
+  105:       alert('Erreur lors du rejet');
+  106      }
+
+src/components/QuoteManagement.tsx:
+  231        fetchQuotes();
+  232:       alert('Devis mis à jour avec succès');
+  233      } catch (error) {
+  234        console.error('Erreur lors de la mise à jour:', error);
+  235:       alert('Erreur lors de la mise à jour du devis');
+  236      }
+
+  251        fetchQuotes();
+  252:       alert('Devis archivé avec succès');
+  253      } catch (error) {
+  254        console.error('Erreur lors de l\'archivage:', error);
+  255:       alert('Erreur lors de l\'archivage du devis');
+  256      }
+
+  268        fetchQuotes();
+  269:       alert('Devis désarchivé avec succès');
+  270      } catch (error) {
+  271        console.error('Erreur lors du désarchivage:', error);
+  272:       alert('Erreur lors du désarchivage du devis');
+  273      }
+
+  291        fetchQuotes();
+  292:       alert('Rappel envoyé avec succès');
+  293      } catch (error) {
+  294        console.error('Erreur lors de l\'envoi du rappel:', error);
+  295:       alert('Erreur lors de l\'envoi du rappel');
+  296      }
+
+  308  
+  309:       alert('Facture générée avec succès! Vous pouvez la consulter dans la section Factures.');
+  310        fetchQuotes();
+
+  313        if (error.message.includes('existe déjà')) {
+  314:         alert('Une facture existe déjà pour ce devis.');
+  315        } else if (error.message.includes('non accepté')) {
+  316:         alert('Le devis doit être accepté pour générer une facture.');
+  317        } else {
+  318:         alert('Erreur lors de la génération de la facture: ' + error.message);
+  319        }
+
+src/components/SiteDetailView.tsx:
+   90      if (currentCount >= maxImages) {
+   91:       alert(`Vous pouvez ajouter maximum ${maxImages} images ${type === 'before' ? 'avant' : type === 'during' ? 'pendant' : 'après'}`);
+   92        return;
+
+  117                console.error('Error inserting image:', insertError);
+  118:               alert(`Erreur lors de l'enregistrement: ${insertError.message}`);
+  119              } else {
+
+  123              console.error('Error saving image:', err);
+  124:             alert('Erreur lors de l\'enregistrement de la photo');
+  125            } finally {
+
+  142      if (currentCount >= maxImages) {
+  143:       alert(`Vous pouvez téléverser maximum ${maxImages} images ${type === 'before' ? 'avant' : type === 'during' ? 'pendant' : 'après'}`);
+  144        return;
+
+  191        console.error('Error uploading images:', err);
+  192:       alert('Erreur lors du téléversement des images');
+  193      } finally {
+
+src/components/StockManager.tsx:
+  154      if (!itemFormData.name || !itemFormData.quantity || !itemFormData.min_quantity) {
+  155:       alert('Tous les champs obligatoires doivent être remplis');
+  156        return;
+
+  179          if (error) throw error;
+  180:         alert('Article modifié avec succès');
+  181        } else {
+
+  184          if (error) throw error;
+  185:         alert('Article ajouté avec succès');
+  186        }
+
+  202        console.error('Error saving stock item:', error);
+  203:       alert('Erreur lors de l\'enregistrement de l\'article');
+  204      } finally {
+
+  237  
+  238:       alert('Article supprimé avec succès');
+  239        loadStockItems();
+
+  242        console.error('Error deleting stock item:', error);
+  243:       alert('Erreur lors de la suppression de l\'article');
+  244      } finally {
+
+  267      if (!movementFormData.stock_item_id || !movementFormData.quantity) {
+  268:       alert('Tous les champs obligatoires doivent être remplis');
+  269        return;
+
+  285  
+  286:       alert('Mouvement enregistré avec succès');
+  287        setShowMovementForm(false);
+
+  298        console.error('Error creating movement:', error);
+  299:       alert(error.message || 'Erreur lors de l\'enregistrement du mouvement');
+  300      } finally {
+
+  402          <div style={{ background: colors.surface, padding: '20px', borderRadius: '16px', border: `2px solid ${colors.border}` }}>
+  403:           <div style={{ fontSize: '14px', color: colors.textSecondary, marginBottom: '8px' }}>Alertes Stock Faible</div>
+  404            <div style={{ fontSize: '24px', fontWeight: 'bold', color: lowStockItems.length > 0 ? colors.danger : colors.success }}>
+
+  447                <div style={{ fontWeight: 'bold', color: colors.danger, marginBottom: '8px' }}>
+  448:                 Alerte Stock Faible ({lowStockItems.length} articles)
+  449                </div>
+
+src/components/TechnicianAssigner.tsx:
+  117      if (!selectedChantier || !selectedTechnician) {
+  118:       alert('Veuillez sélectionner un chantier et un technicien');
+  119        return;
+
+  160  
+  161:       alert('Technicien assigné avec succès!');
+  162      } catch (error) {
+  163        console.error('Erreur assignation:', error);
+  164:       alert('Erreur lors de l\'assignation');
+  165      }
+
+src/components/TSDApp.tsx:
+     8  import DailyNotes from './DailyNotes';
+     9: import AlertsManager from './AlertsManager';
+    10  import AccountManager from './AccountManager';
+
+   318    const [showDailyNotes, setShowDailyNotes] = useState(false);
+   319:   const [showAlerts, setShowAlerts] = useState(false);
+   320    const [nonCompeteSigned, setNonCompeteSigned] = useState(false);
+
+   520      fr: {
+   521: ⟪ 2278 characters skipped ⟫s', totalSpent: 'Total dépensé', slogan: "L'Excellence Européenne au Service de la Guinée", selectService: 'Choisir service', description: 'Description', yourDetails: 'Vos coordonnées', plus: 'Plus', alerts: 'Alertes', analytics: 'Analytics', reports: 'Rapports', companyInfo: 'Informations entreprise', pricing: 'Tarifs & Services', security: 'Sécurité', language: 'Langue & Région', backup: 'Sauvegarde données', myInvoices: 'Mes factures', payments: 'Paiements', selectDate: 'Choisir une date', selectTime: 'Choisir une heure', bookAppointment: 'Réserver', changePhoto: 'Changer la photo', darkMode: 'Mode sombre', lightMode: 'Mode clair', orangeMoney: 'Orange Money', cash: 'Espèces', paymentTerms: 'Conditions de paiement', legalTerms: 'Mentions légales', payment1: '65% à la signature du contrat', payment2: '20% à la moitié du chantier', payment3: '15% à la fin du chantier', nonNegotiable: 'Non négociable', markAsRead: 'Marquer comme lu', deleteNotif: 'Supprimer', viewDetails: 'Voir détails', noNotifications: 'Aucune notification', noHistory: 'Aucun historique', privacyPolicy: 'Politique de confidentialité', termsOfService: "Conditions générales d'utilisation", aboutUs: 'À propos', contactUs: 'N
+   522      },
+   523      en: {
+   524: ⟪ 2131 characters skipped ⟫ 'Interventions', totalSpent: 'Total spent', slogan: "European Excellence at Guinea's Service", selectService: 'Select service', description: 'Description', yourDetails: 'Your details', plus: 'More', alerts: 'Alerts', analytics: 'Analytics', reports: 'Reports', companyInfo: 'Company info', pricing: 'Pricing & Services', security: 'Security', language: 'Language & Region', backup: 'Data backup', myInvoices: 'My invoices', payments: 'Payments', selectDate: 'Select date', selectTime: 'Select time', bookAppointment: 'Book', changePhoto: 'Change photo', darkMode: 'Dark mode', lightMode: 'Light mode', orangeMoney: 'Orange Money', cash: 'Cash', paymentTerms: 'Payment terms', legalTerms: 'Legal terms', payment1: '65% upon contract signing', payment2: '20% at project midpoint', payment3: '15% upon project completion', nonNegotiable: 'Non-negotiable', markAsRead: 'Mark as read', deleteNotif: 'Delete', viewDetails: 'View details', noNotifications: 'No notifications', noHistory: 'No history', privacyPolicy: 'Privacy Policy', termsOfService: 'Terms of Service', aboutUs: 'About Us', contactUs: 'Contact Us', paymentMethods: 'Payment Methods', faq: 'FAQ', chatbot: 'Virtual Assistant', serviceTerms: 'Servic
+   525      },
+   526      ar: {
+   527: ⟪ 2001 characters skipped ⟫e: 'مؤسسة', interventions: 'التدخلات', totalSpent: 'إجمالي الإنفاق', slogan: 'التميز الأوروبي في خدمة غينيا', selectService: 'اختر خدمة', description: 'الوصف', yourDetails: 'تفاصيلك', plus: 'المزيد', alerts: 'التنبيهات', analytics: 'التحليلات', reports: 'التقارير', companyInfo: 'معلومات الشركة', pricing: 'الأسعار والخدمات', security: 'الأمان', language: 'اللغة والمنطقة', backup: 'النسخ الاحتياطي', myInvoices: 'فواتيري', payments: 'المدفوعات', selectDate: 'اختر تاريخًا', selectTime: 'اختر وقتًا', bookAppointment: 'حجز', changePhoto: 'تغيير الصورة', darkMode: 'الوضع الداكن', lightMode: 'الوضع الفاتح', orangeMoney: 'Orange Money', cash: 'نقدًا', paymentTerms: 'شروط الدفع', legalTerms: 'الشروط القانونية', payment1: '65٪ عند توقيع العقد', payment2: '20٪ في منتصف المشروع', payment3: '15٪ عند إتمام المشروع', nonNegotiable: 'غير قابل للتفاوض', markAsRead: 'تحديد كمقروء', deleteNotif: 'حذف', viewDetails: 'عرض التفاصيل', noNotifications: 'لا توجد إشعارات', noHistory: 'لا يوجد سجل', privacyPolicy: 'سياسة الخصوصية', termsOfService: 'شروط الخدمة', aboutUs: 'معلومات عنا', contactUs: 'اتصل بنا', paymentMethods: 'طرق الدفع', faq: 'الأسئلة الشائعة', chatbot: 'المساعد الافتراضي', serviceTerms: 'شروط
+   528      }
+
+   837          console.error('Chantier status update error:', updateError);
+   838:         alert(lang === 'fr' ? 'Erreur lors de la mise a jour du statut. Veuillez reessayer.' : 'Error updating status. Please try again.');
+   839          return;
+
+   906          : { started: 'Work started!', resumed: 'Work resumed!', interrupted: 'Work interrupted', abandoned: 'Work abandoned', team_changed: 'Team changed', completed: 'Work completed!' };
+   907:       alert(confirmLabels[activityType] || (lang === 'fr' ? 'Statut mis a jour' : 'Status updated'));
+   908      } catch (err) {
+   909        console.error('Error updating chantier status:', err);
+   910:       alert(lang === 'fr' ? 'Une erreur est survenue. Veuillez reessayer.' : 'An error occurred. Please try again.');
+   911      } finally {
+
+  1019          console.error('Error creating appointment:', error);
+  1020:         alert(lang === 'fr' ? 'Erreur lors de la création du rendez-vous' : 'Error creating appointment');
+  1021          return;
+
+  1036        console.error('Exception creating appointment:', err);
+  1037:       alert(lang === 'fr' ? 'Erreur lors de la création du rendez-vous' : 'Error creating appointment');
+  1038      }
+
+  2677  
+  2678:     if (showAlerts) {
+  2679:       return <AlertsManager userId={currentUser?.id} userRole={userRole || 'tech'} colors={C} onBack={() => setShowAlerts(false)} />;
+  2680      }
+
+  2873                        }else{
+  2874:                         alert(lang==='fr'?'Aucune adresse disponible':'No address available');
+  2875                        }
+
+  3072                      if (!address) {
+  3073:                       alert(lang==='fr'?'Aucune adresse disponible':'No address available');
+  3074                        return;
+
+  3149            </div>
+  3150:           <div onClick={()=>setShowAlerts(true)} style={{background:C.card,borderRadius:'14px',padding:'16px',marginBottom:'10px',display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}}>
+  3151:             <div style={{display:'flex',alignItems:'center',gap:'12px'}}><span style={{fontSize:'22px'}}>🔔</span><span style={{fontSize:'15px',color:C.text}}>{lang==='fr'?'Alertes':'Alerts'}</span></div>
+  3152              <span style={{color:C.textSecondary}}>→</span>
+
+  3458                        setNonCompeteSigned(true);
+  3459:                       alert(lang==='fr'?'Signature enregistrée avec succès':'Signature recorded successfully');
+  3460                      } catch(err) {
+  3461                        console.error('Error signing:', err);
+  3462:                       alert(lang==='fr'?'Erreur lors de la signature':'Error during signature');
+  3463                      }
+
+src/components/WorkShiftManager.tsx:
+  124      if (!worksiteName.trim()) {
+  125:       alert('Veuillez entrer le nom du chantier');
+  126        return;
+
+  140        loadCompletedWorksites();
+  141:       alert('Chantier marqué comme terminé !');
+  142      } catch (err) {
+
+src/components/WorkShiftTracker.tsx:
+   29    const [remainingBreakTime, setRemainingBreakTime] = useState<number>(0);
+   30:   const [showBreakAlert, setShowBreakAlert] = useState(false);
+   31    const [shiftModal, setShiftModal] = useState<{
+
+  108  
+  109:         if (remaining <= 0 && !showBreakAlert) {
+  110:           setShowBreakAlert(true);
+  111          }
+
+  115      }
+  116:   }, [userStatus?.is_on_break, userStatus?.break_start_time, userStatus?.break_duration_minutes, showBreakAlert]);
+  117  
+
+  388              setLoading(false);
+  389:             setShowBreakAlert(false);
+  390              loadUserStatus();
+
+  419          setLoading(false);
+  420:         setShowBreakAlert(false);
+  421          loadUserStatus();
+
+  465  
+  466:       setShowBreakAlert(false);
+  467        loadUserStatus();
+
+  714            </div>
+  715:           {showBreakAlert && (
+  716              <div style={{ marginTop: '8px', fontSize: '14px' }}>
+
+src/hooks/useRealtimeSync.ts:
+  168  
+  169: export const useRealtimeAlerts = (onUpdate: () => void, userId?: string) => {
+  170    useRealtimeSync({
+  171:     table: 'admin_alerts',
+  172      onChange: onUpdate,
+
+src/pages/WelcomeIntroPage.tsx:
+   33              section3: "🔔 Notifications",
+   34:             section3Text: "Restez informé de l'avancement de vos projets, des rendez-vous confirmés et recevez des alertes importantes en temps réel.",
+   35              section4: "💳 Paiements Sécurisés",
+
+   53              section4: "🎂 Équipe",
+   54:             section4Text: "Restez connecté avec vos collègues, consultez les anniversaires de l'équipe et accédez aux alertes importantes de l'entreprise.",
+   55              ready: "Gérez vos missions",
+
+  126              section3: "🔔 Notifications",
+  127:             section3Text: "Stay informed about your project progress, confirmed appointments, and receive important real-time alerts.",
+  128              section4: "💳 Secure Payments",
+
+  146              section4: "🎂 Team",
+  147:             section4Text: "Stay connected with your colleagues, check team birthdays, and access important company alerts.",
+  148              ready: "Manage your missions",
+
+supabase/migrations/20260209035524_delete_all_demo_data_simple.sql:
+  38  -- Vider toutes les tables publiques (CASCADE supprime les données dépendantes)
+  39: TRUNCATE TABLE public.admin_alerts CASCADE;
+  40  TRUNCATE TABLE public.birthdays CASCADE;
+
+supabase/migrations/20260209053117_delete_all_data_complete_reset.sql:
+  15  -- Suppression des données des tables dépendantes en premier
+  16: DELETE FROM admin_alerts;
+  17  DELETE FROM site_images;
+
+supabase/migrations/20260210020017_enable_automatic_profile_creation.sql:
+  85    LOOP
+  86:     INSERT INTO public.admin_alerts (
+  87        recipient_id,
+  88:       alert_type,
+  89        title,
+
+supabase/migrations/20260210030149_reset_production_data.sql:
+  48  
+  49: -- Clear admin alerts table
+  50: DELETE FROM admin_alerts WHERE id IS NOT NULL;
+  51  
+
+supabase/migrations/20260210033623_clean_production_fake_data.sql:
+  24       - Remove all daily_notes
+  25:      - Remove all admin_alerts
+  26       - Remove all worksite_completions
+
+  83  
+  84: -- Delete test admin alerts
+  85: DELETE FROM admin_alerts;
+  86  
+
+supabase/migrations/20260213050927_clean_test_data_for_production.sql:
+  63  
+  64: -- Supprimer les alertes admin
+  65: DELETE FROM admin_alerts WHERE recipient_id IN (
+  66    SELECT id FROM app_users WHERE email != 'tidiane@tsdetfils.com'
+
+supabase/migrations/20260213070228_create_stock_management_tables.sql:
+  10      - `quantity` (integer)
+  11:     - `min_quantity` (integer, threshold for alerts)
+  12      - `unit` (text: piece, kg, litre, metre, carton, paquet)
+
+supabase/migrations/20260213225130_complete_data_reset_production.sql:
+  20       - `notifications` - Toutes les notifications
+  21:      - `admin_alerts` - Toutes les alertes
+  22       - `daily_notes` - Toutes les notes quotidiennes
+
+  77  
+  78: -- 3. Supprimer les notifications et alertes
+  79  TRUNCATE TABLE notifications CASCADE;
+  80: TRUNCATE TABLE admin_alerts CASCADE;
+  81  TRUNCATE TABLE contact_messages CASCADE;
+
+supabase/migrations/20260214173613_reset_all_data_clean.sql:
+  73  
+  74: -- Supprimer les alertes admin
+  75: DELETE FROM admin_alerts;
+  76  
+
+supabase/migrations/20260215204528_add_automatic_quote_notification_system_v3.sql:
+  6      - Notification automatique quand un devis est accepté/refusé
+  7:     - Le client reçoit une alerte dans son interface
+  8    
+
+supabase/migrations/20260217034017_optimize_all_rls_policies_performance.sql:
+  12    - payment_records, birthdays, incidents, non_compete_signatures
+  13:   - daily_notes, admin_alerts, worksite_completions, admin_settings
+  14    - projects, notifications, reports, notification_settings
+
+supabase/migrations/20260217034100_optimize_rls_policies_part2.sql:
+  4    ## Tables Updated
+  5:   - daily_notes, admin_alerts, worksite_completions, admin_settings
+  6    - projects, notifications, reports, notification_settings
+
+supabase/migrations/20260217034340_remove_unused_indexes.sql:
+  115  -- Remove unused indexes that were just created (not yet used)
+  116: DROP INDEX IF EXISTS public.idx_admin_alerts_created_by;
+  117  DROP INDEX IF EXISTS public.idx_admin_settings_updated_by;
+
+supabase/migrations/20260217035506_add_missing_foreign_key_indexes.sql:
+  16  
+  17: -- admin_alerts
+  18: CREATE INDEX IF NOT EXISTS idx_admin_alerts_created_by ON public.admin_alerts(created_by);
+  19  
+
+supabase/migrations/20260217035625_optimize_final_remaining_rls_policies_fixed_v2.sql:
+   8    ## Tables Covered
+   9:   - admin_alerts
+  10    - conversations
+
+  19  -- =====================================================
+  20: -- ADMIN_ALERTS
+  21  -- =====================================================
+  22  
+  23: DROP POLICY IF EXISTS "Users can read own alerts" ON public.admin_alerts;
+  24: CREATE POLICY "Users can read own alerts" ON public.admin_alerts
+  25    FOR SELECT
+
+  35  
+  36: DROP POLICY IF EXISTS "Users can update own alerts read status" ON public.admin_alerts;
+  37: CREATE POLICY "Users can update own alerts read status" ON public.admin_alerts
+  38    FOR UPDATE
+
+supabase/migrations/20260218230616_fix_handle_new_app_user_and_profiles_fk.sql:
+  94    LOOP
+  95:     INSERT INTO public.admin_alerts (
+  96        recipient_id,
+  97:       alert_type,
+  98        title,
+
+supabase/migrations/20260220015403_drop_all_unused_indexes.sql:
+   8    2. Tables affected
+   9:     - admin_alerts, admin_settings, appointments, birthdays, chantiers,
+  10        chatbot_conversations, clients, expenses, guinea_cities, guinea_communes,
+
+  21  
+  22: DROP INDEX IF EXISTS idx_admin_alerts_created_by;
+  23  DROP INDEX IF EXISTS idx_admin_settings_updated_by;
+
+supabase/migrations/20260414004835_add_missing_foreign_key_indexes.sql:
+  10      - absences.created_by
+  11:     - admin_alerts.created_by
+  12      - admin_settings.updated_by
+
+  50  CREATE INDEX IF NOT EXISTS idx_absences_created_by ON public.absences (created_by);
+  51: CREATE INDEX IF NOT EXISTS idx_admin_alerts_created_by ON public.admin_alerts (created_by);
+  52  CREATE INDEX IF NOT EXISTS idx_admin_settings_updated_by ON public.admin_settings (updated_by);
+
+supabase/migrations/20260415213623_reset_all_operational_data_keep_accounts.sql:
+  20      - Stock: stocks, stock_items, stock_movements
+  21:     - Notifications: notifications, notification_settings, admin_alerts
+  22      - Incidents & Reports: incidents, reports
+
+  78    notification_settings,
+  79:   admin_alerts,
+  80    incidents,
+
+supabase/migrations/20260415230254_create_admin_broadcasts_system.sql:
+   9        - `message` (text) - broadcast content
+  10:       - `type` (text) - type: announcement, promotion, alert, info
+  11        - `target_roles` (text[]) - which roles see this: client, tech, office, visitor
+
+supabase/migrations/20260420215616_migrate_part5_geography_admin_supporting.sql:
+    5      - Guinea geography: regions, prefectures, communes, districts, villages, cities
+    6:     - Admin: admin_settings, admin_alerts, admin_broadcasts
+    7      - Supporting: notifications, chatbot_conversations, incidents, birthdays, etc.
+
+  116  
+  117: -- admin_alerts
+  118: CREATE TABLE IF NOT EXISTS admin_alerts (
+  119    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  126  );
+  127: ALTER TABLE admin_alerts ENABLE ROW LEVEL SECURITY;
+  128  
+
+supabase/migrations/20260420235836_create_part5_geography_admin_supporting.sql:
+    5      - Guinea geography: regions, prefectures, communes, districts, villages, cities
+    6:     - Admin: admin_settings, admin_alerts, admin_broadcasts
+    7      - Supporting: notifications, chatbot_conversations, incidents, birthdays, etc.
+
+  116  
+  117: -- admin_alerts
+  118  DO $$ BEGIN
+  119:   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'admin_alerts' AND column_name = 'recipient_id') THEN
+  120:     ALTER TABLE admin_alerts ADD COLUMN recipient_id uuid REFERENCES app_users(id) ON DELETE CASCADE;
+  121    END IF;
+  122:   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'admin_alerts' AND column_name = 'alert_type') THEN
+  123:     ALTER TABLE admin_alerts ADD COLUMN alert_type text;
+  124    END IF;
+  125:   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'admin_alerts' AND column_name = 'created_by') THEN
+  126:     ALTER TABLE admin_alerts ADD COLUMN created_by uuid REFERENCES app_users(id);
+  127    END IF;
+
+supabase/migrations/20260421000021_create_part6_all_functions_v2.sql:
+  121    LOOP
+  122:     INSERT INTO public.admin_alerts (recipient_id, alert_type, title, message, created_by, is_read)
+  123      VALUES (admin_rec.id, 'general', 'Nouveau compte cree',
+
+supabase/migrations/20260421000455_create_all_rls_policies_final.sql:
+  21      'guinea_prefectures','guinea_communes','guinea_districts','guinea_villages',
+  22:     'guinea_cities','admin_settings','admin_alerts','admin_broadcasts',
+  23      'notifications','notification_settings','chatbot_conversations','incidents',
+
+supabase/migrations/20260421000608_fix_daily_notes_and_apply_remaining_policies.sql:
+  103  
+  104: -- admin_alerts
+  105: CREATE POLICY "p1" ON admin_alerts FOR SELECT TO authenticated USING (is_admin_or_office() OR recipient_id = (SELECT auth.uid()));
+  106: CREATE POLICY "p2" ON admin_alerts FOR INSERT TO authenticated WITH CHECK (true);
+  107: CREATE POLICY "p3" ON admin_alerts FOR UPDATE TO authenticated USING (is_admin_or_office() OR recipient_id = (SELECT auth.uid()));
+  108  
+
+supabase/migrations/20260422080016_fix_security_definer_view_and_rls_always_true_policies.sql:
+   9    2. RLS Policy Changes (replace always-true INSERT policies)
+  10:     - `admin_alerts.p2`: Only admin/office users can insert alerts
+  11      - `appointments.p3`: Anyone can insert but must set user_id = own id when authenticated
+
+  51  -- ============================================================
+  52: -- 2. Fix admin_alerts INSERT policy
+  53: --    Only admin/office users should create alerts
+  54  -- ============================================================
+  55: DROP POLICY IF EXISTS "p2" ON public.admin_alerts;
+  56  
+  57: CREATE POLICY "Admins and office can insert alerts"
+  58:   ON public.admin_alerts
+  59    FOR INSERT
