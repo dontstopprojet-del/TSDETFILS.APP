@@ -211,23 +211,16 @@ const CreateAccountForm = ({ onClose, onSuccess, darkMode, colors, lang }: Creat
           }, { onConflict: 'id' });
 
         if (profileError) {
-          console.error('[CreateAccount] app_users upsert failed:', profileError.message, profileError.details, profileError.hint);
-          throw profileError;
-        }
+  console.error('[CreateAccount] app_users upsert failed:', profileError);
 
-        await fetch(
-  "https://wwzenpgopftcqhhczmni.supabase.co/functions/v1/send-welcome-email",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email: formData.email,
-      name: formData.name,
-    }),
+  if (profileError?.message?.includes('app_users_email_key')) {
+    setMessage("Un compte existe déjà avec cette adresse email.");
+    return;
   }
-);
+
+  throw profileError;
+}
+
         const emailMsg = lang === 'fr'
           ? 'Compte cree ! Un email de verification a ete envoye.'
           : 'Account created! A verification email has been sent.';
