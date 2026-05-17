@@ -190,6 +190,20 @@ const CreateAccountForm = ({ onClose, onSuccess, darkMode, colors, lang }: Creat
 
       if (authError) throw authError;
 
+      await fetch(
+  "https://wwzenpgopftcqhhczmni.supabase.co/functions/v1/send-welcome-email",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: formData.email,
+      name: formData.name,
+    }),
+  }
+);
+
       if (authData.user) {
         const { error: profileError } = await supabase
           .from('app_users')
