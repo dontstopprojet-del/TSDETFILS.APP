@@ -13,9 +13,10 @@ const CreateAccountForm = ({
   onClose,
   onSuccess,
   darkMode,
-  _colors,
+  colors,
   lang,
 }: CreateAccountFormProps) => {
+  void colors;
   const t = {
     required:
       lang === 'fr'
