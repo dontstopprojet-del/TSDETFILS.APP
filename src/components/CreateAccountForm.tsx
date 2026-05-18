@@ -13,7 +13,7 @@ const CreateAccountForm = ({
   onClose,
   onSuccess,
   darkMode,
-  colors,
+  _colors,
   lang,
 }: CreateAccountFormProps) => {
   const t = {
