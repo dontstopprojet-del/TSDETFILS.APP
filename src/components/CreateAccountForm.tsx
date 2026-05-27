@@ -208,8 +208,10 @@ const CreateAccountForm = ({
 if (!welcomeResponse.ok) {
   const welcomeError = await welcomeResponse.text();
   console.error('Welcome email failed:', welcomeError);
+  alert('EMAIL ERROR');
 } else {
   console.log('Welcome email sent');
+  alert('EMAIL FUNCTION OK');
 }
 
         const emailMsg =
