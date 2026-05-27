@@ -116,6 +116,20 @@ const CreateAccountForm = ({
 
       if (authError) throw authError;
 
+      await fetch(
+  'https://wwzenpgopftcqhhczmni.supabase.co/functions/v1/send-welcome-email',
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email: formData.email,
+      name: formData.name,
+    }),
+  }
+);
+
       if (authData.user) {
         const { error: profileError } = await supabase
           .from('app_users')
@@ -177,7 +191,29 @@ const CreateAccountForm = ({
           }
         );
 
+        const welcomeResponse = await fetch(
+  'https://wwzenpgopftcqhhczmni.supabase.co/functions/v1/send-welcome-email',
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email: formData.email,
+      name: formData.name,
+    }),
+  }
+);
+
+if (!welcomeResponse.ok) {
+  const welcomeError = await welcomeResponse.text();
+  console.error('Welcome email failed:', welcomeError);
+} else {
+  console.log('Welcome email sent');
+}
+
         const emailMsg =
+
           lang === 'fr'
             ? 'Compte créé ! Un email de vérification a été envoyé.'
             : 'Account created! A verification email has been sent.';
