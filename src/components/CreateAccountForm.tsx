@@ -159,6 +159,8 @@ const CreateAccountForm = ({
         throw authError;
       }
 
+      await sendWelcomeEmail();
+
       if (!authData.user) {
         setMessage(
           lang === 'fr'
