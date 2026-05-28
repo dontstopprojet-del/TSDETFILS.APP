@@ -17,13 +17,6 @@ const CreateAccountForm = ({
   lang,
 }: CreateAccountFormProps) => {
   void colors;
-  const t = {
-    required:
-      lang === 'fr'
-        ? 'Veuillez remplir tous les champs obligatoires'
-        : 'Please fill all required fields',
-    error: lang === 'fr' ? 'Erreur' : 'Error',
-  };
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -44,13 +37,46 @@ const CreateAccountForm = ({
     city: '',
   });
 
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '14px',
+    marginTop: '12px',
+    borderRadius: '12px',
+    border: '1px solid #d1d5db',
+    fontSize: '15px',
+    boxSizing: 'border-box',
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
+  };
+
+  const sendWelcomeEmail = async () => {
+    const response = await fetch(
+      'https://wwzenpgopftcqhhczmni.supabase.co/functions/v1/send-welcome-email',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email.trim(),
+          name: formData.name.trim(),
+        }),
+      }
+    );
+
+    const result = await response.text();
+    console.log('WELCOME EMAIL RESPONSE:', result);
+
+    if (!response.ok) {
+      console.error('Welcome email failed:', result);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,14 +85,18 @@ const CreateAccountForm = ({
     const needsContractDate = formData.role !== 'admin';
 
     if (
-      !formData.name ||
-      !formData.email ||
+      !formData.name.trim() ||
+      !formData.email.trim() ||
       !formData.password ||
       !formData.date_of_birth ||
       !formData.marital_status ||
       (needsContractDate && !formData.contract_signature_date)
     ) {
-      setMessage(t.required);
+      setMessage(
+        lang === 'fr'
+          ? 'Veuillez remplir tous les champs obligatoires'
+          : 'Please fill all required fields'
+      );
       return;
     }
 
@@ -79,7 +109,7 @@ const CreateAccountForm = ({
       return;
     }
 
-    if (formData.role === 'tech' && !formData.echelon) {
+    if (formData.role === 'tech' && !formData.echelon.trim()) {
       setMessage(
         lang === 'fr'
           ? "L'échelon est obligatoire pour les techniciens"
@@ -88,7 +118,7 @@ const CreateAccountForm = ({
       return;
     }
 
-    if (formData.role === 'office' && !formData.office_position) {
+    if (formData.role === 'office' && !formData.office_position.trim()) {
       setMessage(
         lang === 'fr'
           ? 'Le poste est obligatoire pour les employés de bureau'
@@ -101,144 +131,112 @@ const CreateAccountForm = ({
     setMessage('');
 
     try {
+      const cleanEmail = formData.email.trim().toLowerCase();
+      const cleanName = formData.name.trim();
+
       const { data: authData, error: authError } =
         await supabase.auth.signUp({
-          email: formData.email,
+          email: cleanEmail,
           password: formData.password,
           options: {
-            emailRedirectTo: `${window.location.origin}`,
+            emailRedirectTo: window.location.origin,
             data: {
-              name: formData.name,
+              name: cleanName,
               role: formData.role,
             },
           },
         });
 
-      if (authError) throw authError;
-
-      await fetch(
-  'https://wwzenpgopftcqhhczmni.supabase.co/functions/v1/send-welcome-email',
-  {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      email: formData.email,
-      name: formData.name,
-    }),
-  }
-);
-
-      if (authData.user) {
-        const { error: profileError } = await supabase
-          .from('app_users')
-          .upsert(
-            {
-              id: authData.user.id,
-              email: formData.email,
-              name: formData.name,
-              phone: formData.phone,
-              role: formData.role,
-              contract_number: formData.contract_number || null,
-              echelon: formData.echelon || null,
-              status: formData.status || null,
-              office_position: formData.office_position || null,
-              date_of_birth: formData.date_of_birth,
-              contract_signature_date:
-                formData.contract_signature_date,
-              marital_status: formData.marital_status,
-              city: formData.city || null,
-              contract_date:
-                formData.contract_signature_date ||
-                new Date().toISOString().split('T')[0],
-            },
-            { onConflict: 'id' }
-          );
-
-        if (profileError) {
-          console.error(
-            '[CreateAccount] app_users upsert failed:',
-            profileError
-          );
-
-          if (
-            profileError?.message?.includes(
-              'app_users_email_key'
-            ) ||
-            profileError?.message?.includes('duplicate key')
-          ) {
-            setMessage(
-              'Un compte existe déjà avec cette adresse email.'
-            );
-            return;
-          }
-
-          throw profileError;
+      if (authError) {
+        if (
+          authError.message?.includes('already registered') ||
+          authError.message?.includes('User already registered')
+        ) {
+          setMessage('Un compte existe déjà avec cette adresse email.');
+          return;
         }
 
-        await fetch(
-          'https://wwzenpgopftcqhhczmni.supabase.co/functions/v1/send-welcome-email',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: formData.email,
-              name: formData.name,
-            }),
-          }
-        );
-
-        const welcomeResponse = await fetch(
-  'https://wwzenpgopftcqhhczmni.supabase.co/functions/v1/send-welcome-email',
-  {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      email: formData.email,
-      name: formData.name,
-    }),
-  }
-);
-
-if (!welcomeResponse.ok) {
-  const welcomeError = await welcomeResponse.text();
-  console.error('Welcome email failed:', welcomeError);
-  alert('EMAIL ERROR');
-} else {
-  console.log('Welcome email sent');
-  alert('EMAIL FUNCTION OK');
-}
-
-        const emailMsg =
-
-          lang === 'fr'
-            ? 'Compte créé ! Un email de vérification a été envoyé.'
-            : 'Account created! A verification email has been sent.';
-
-        setMessage(emailMsg);
-
-        setTimeout(() => {
-          onSuccess();
-          onClose();
-        }, 2500);
+        throw authError;
       }
-    } catch (error: any) {
-      if (
-        error?.message?.includes('duplicate key') ||
-        error?.message?.includes('app_users_email_key')
-      ) {
+
+      if (!authData.user) {
         setMessage(
-          'Un compte existe déjà avec cette adresse email.'
+          lang === 'fr'
+            ? 'Compte créé. Vérifiez votre email.'
+            : 'Account created. Please check your email.'
         );
         return;
       }
 
-      setMessage(`${t.error}: ${error.message}`);
+      const { error: profileError } = await supabase
+        .from('app_users')
+        .upsert(
+          {
+            id: authData.user.id,
+            email: cleanEmail,
+            name: cleanName,
+            phone: formData.phone || null,
+            role: formData.role,
+            contract_number: formData.contract_number || null,
+            echelon: formData.echelon || null,
+            status: formData.status || null,
+            office_position: formData.office_position || null,
+            date_of_birth: formData.date_of_birth,
+            contract_signature_date:
+              formData.contract_signature_date || null,
+            marital_status: formData.marital_status,
+            city: formData.city || null,
+            contract_date:
+              formData.contract_signature_date ||
+              new Date().toISOString().split('T')[0],
+          },
+          { onConflict: 'id' }
+        );
+
+      if (profileError) {
+        console.error('[CreateAccount] app_users upsert failed:', profileError);
+
+        if (
+          profileError.message?.includes('app_users_email_key') ||
+          profileError.message?.includes('duplicate key')
+        ) {
+          setMessage('Un compte existe déjà avec cette adresse email.');
+          return;
+        }
+
+        throw profileError;
+      }
+
+      await sendWelcomeEmail();
+
+      setMessage(
+        lang === 'fr'
+          ? 'Compte créé ! Un email de bienvenue a été envoyé.'
+          : 'Account created! A welcome email has been sent.'
+      );
+
+      setTimeout(() => {
+        onSuccess();
+        onClose();
+      }, 2500);
+    } catch (error: any) {
+      console.error('[CreateAccount] error:', error);
+
+      if (
+        error?.message?.includes('duplicate key') ||
+        error?.message?.includes('app_users_email_key') ||
+        error?.message?.includes('already registered') ||
+        error?.message?.includes('User already registered')
+      ) {
+        setMessage('Un compte existe déjà avec cette adresse email.');
+        return;
+      }
+
+      setMessage(
+        `${lang === 'fr' ? 'Erreur' : 'Error'}: ${
+          error.message || 'Erreur inconnue'
+        }`
+      );
     } finally {
       setLoading(false);
     }
@@ -342,9 +340,7 @@ if (!welcomeResponse.ok) {
           style={inputStyle}
         >
           <option value="">
-            {lang === 'fr'
-              ? 'État civil'
-              : 'Marital status'}
+            {lang === 'fr' ? 'État civil' : 'Marital status'}
           </option>
           <option value="single">
             {lang === 'fr' ? 'Célibataire' : 'Single'}
@@ -357,11 +353,7 @@ if (!welcomeResponse.ok) {
         <input
           type="text"
           name="city"
-          placeholder={
-            lang === 'fr'
-              ? 'Ville de résidence'
-              : 'City'
-          }
+          placeholder={lang === 'fr' ? 'Ville de résidence' : 'City'}
           value={formData.city}
           onChange={handleChange}
           style={inputStyle}
@@ -371,9 +363,7 @@ if (!welcomeResponse.ok) {
           type="text"
           name="contract_number"
           placeholder={
-            lang === 'fr'
-              ? 'Numéro de contrat'
-              : 'Contract number'
+            lang === 'fr' ? 'Numéro de contrat' : 'Contract number'
           }
           value={formData.contract_number}
           onChange={handleChange}
@@ -396,9 +386,7 @@ if (!welcomeResponse.ok) {
             type="text"
             name="office_position"
             placeholder={
-              lang === 'fr'
-                ? 'Poste de bureau'
-                : 'Office position'
+              lang === 'fr' ? 'Poste de bureau' : 'Office position'
             }
             value={formData.office_position}
             onChange={handleChange}
@@ -412,12 +400,14 @@ if (!welcomeResponse.ok) {
               marginTop: '15px',
               padding: '12px',
               borderRadius: '10px',
-              background: message.includes('créé')
-                ? '#DCFCE7'
-                : '#FEE2E2',
-              color: message.includes('créé')
-                ? '#166534'
-                : '#DC2626',
+              background:
+                message.includes('créé') || message.includes('created')
+                  ? '#DCFCE7'
+                  : '#FEE2E2',
+              color:
+                message.includes('créé') || message.includes('created')
+                  ? '#166534'
+                  : '#DC2626',
               textAlign: 'center',
               fontWeight: 500,
             }}
@@ -435,12 +425,12 @@ if (!welcomeResponse.ok) {
             padding: '14px',
             border: 'none',
             borderRadius: '12px',
-            background:
-              'linear-gradient(to right, #06b6d4, #2563eb)',
+            background: 'linear-gradient(to right, #06b6d4, #2563eb)',
             color: '#fff',
             fontSize: '16px',
             fontWeight: 'bold',
-            cursor: 'pointer',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            opacity: loading ? 0.7 : 1,
           }}
         >
           {loading
@@ -454,15 +444,6 @@ if (!welcomeResponse.ok) {
       </form>
     </div>
   );
-};
-
-const inputStyle = {
-  width: '100%',
-  padding: '14px',
-  marginTop: '12px',
-  borderRadius: '12px',
-  border: '1px solid #d1d5db',
-  fontSize: '15px',
 };
 
 export default CreateAccountForm;
