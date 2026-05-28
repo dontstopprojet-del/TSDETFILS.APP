@@ -80,6 +80,7 @@ const CreateAccountForm = ({
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("HANDLE SUBMIT START");
     e.preventDefault();
 
     const needsContractDate = formData.role !== 'admin';
@@ -134,6 +135,9 @@ const CreateAccountForm = ({
       const cleanEmail = formData.email.trim().toLowerCase();
       const cleanName = formData.name.trim();
 
+      console.log("BEFORE SIGNUP");
+      console.log("AFTER SIGNUP", authData, authError);
+
       const { data: authData, error: authError } =
         await supabase.auth.signUp({
           email: cleanEmail,
@@ -159,6 +163,7 @@ const CreateAccountForm = ({
         throw authError;
       }
 
+      console.log("CALLING WELCOME EMAIL");
       await sendWelcomeEmail();
 
       if (!authData.user) {
