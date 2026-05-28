@@ -136,7 +136,6 @@ const CreateAccountForm = ({
       const cleanName = formData.name.trim();
 
       console.log("BEFORE SIGNUP");
-      console.log("AFTER SIGNUP", authData, authError);
 
       const { data: authData, error: authError } =
         await supabase.auth.signUp({
@@ -151,6 +150,8 @@ const CreateAccountForm = ({
           },
         });
 
+        console.log("AFTER SIGNUP", authData, authError);
+
       if (authError) {
         if (
           authError.message?.includes('already registered') ||
@@ -164,6 +165,7 @@ const CreateAccountForm = ({
       }
 
       console.log("CALLING WELCOME EMAIL");
+
       await sendWelcomeEmail();
 
       if (!authData.user) {
