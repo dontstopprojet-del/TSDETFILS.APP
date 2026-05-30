@@ -259,6 +259,35 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
   }
 };
 
+const handleForgotPassword = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  setResetMessage('');
+
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(
+      forgotPasswordEmail,
+      {
+        redirectTo: `${window.location.origin}`,
+      }
+    );
+
+    if (error) throw error;
+
+    setResetMessage(
+      getText(
+        'Un email de réinitialisation a été envoyé à votre adresse',
+        'A password reset email has been sent to your address',
+        'تم إرسال بريد إلكتروني لإعادة تعيين كلمة المرور'
+      )
+    );
+  } catch (err: any) {
+    setResetMessage(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== newPasswordConfirm) {
