@@ -123,193 +123,141 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  e.preventDefault();
+  setError('');
+  setLoading(true);
 
-    try {
-      if (isSignUp) {
-        if (password !== passwordConfirm) {
-          throw new Error(getText('Les mots de passe ne correspondent pas', 'Passwords do not match', 'كلمات المرور غير متطابقة'));
-        }
+  const cleanEmail = email.trim().toLowerCase();
+  const cleanName = name.trim();
 
-        if (!phone) {
-          throw new Error(getText('Veuillez entrer votre numéro de téléphone', 'Please enter your phone number', 'الرجاء إدخال رقم هاتفك'));
-        }
-
-        if (!phone.startsWith('+')) {
-          throw new Error(getText('Le numéro doit commencer par un indicatif (ex: +224, +32)', 'Phone number must start with a country code (e.g. +224, +32)', 'يجب أن يبدأ الرقم برمز البلد (مثال: 224+، 32+)'));
-        }
-
-        if (!dateOfBirth) {
-          throw new Error(getText('Veuillez entrer votre date de naissance', 'Please enter your date of birth', 'الرجاء إدخال تاريخ ميلادك'));
-        }
-
-        if (!contractSignatureDate && role !== 'admin') {
-          throw new Error(getText('Veuillez entrer la date de signature du contrat', 'Please enter the contract signature date', 'الرجاء إدخال تاريخ توقيع العقد'));
-        }
-
-        if (role === 'client' && !city.trim()) {
-          throw new Error(getText('La ville de résidence est obligatoire pour les clients', 'City of residence is required for clients', 'مدينة الإقامة مطلوبة للعملاء'));
-        }
-
-        if ((role === 'client' || role === 'tech') && !contractNumber.trim()) {
-          throw new Error(getText('Le numéro de contrat est obligatoire', 'Contract number is required', 'رقم العقد مطلوب'));
-        }
-
-        if (role === 'admin' && !email.endsWith('@tsdetfils.com')) {
-          throw new Error(getText('Les administrateurs doivent utiliser un email @tsdetfils.com', 'Administrators must use a @tsdetfils.com email', 'يجب على المسؤولين استخدام بريد إلكتروني @tsdetfils.com'));
-        }
-
-        if (role === 'admin' && !createdDate) {
-          throw new Error(getText('La date de création est obligatoire', 'Creation date is required', 'تاريخ الإنشاء مطلوب'));
-        }
-
-        if (role === 'admin' && !mad.trim()) {
-          throw new Error(getText('Le champ MAD est obligatoire', 'MAD field is required', 'حقل MAD مطلوب'));
-        }
-
-        if (role === 'admin' && !creationLocation.trim()) {
-          throw new Error(getText('Le lieu de création est obligatoire', 'Creation location is required', 'مكان الإنشاء مطلوب'));
-        }
-
-        if (role === 'admin' && !district.trim()) {
-          throw new Error(getText('Le quartier est obligatoire', 'District is required', 'الحي مطلوب'));
-        }
-
-        if (role === 'admin' && !postalCode.trim()) {
-          throw new Error(getText('Le code postal est obligatoire', 'Postal code is required', 'الرمز البريدي مطلوب'));
-        }
-
-        if (role === 'tech' && !echelon) {
-          throw new Error(getText('Veuillez sélectionner un échelon', 'Please select a rank', 'الرجاء تحديد رتبة'));
-        }
-
-        if (role === 'office' && !officePosition) {
-          throw new Error(getText('Veuillez sélectionner un poste', 'Please select a position', 'الرجاء تحديد منصب'));
-        }
-
-        const { data: authData, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}`
-          }
-        });
-
-        if (signUpError) throw signUpError;
-
-        if (authData.user) {
-          const { error: profileError } = await supabase
-            .from('app_users')
-            .upsert({
-              id: authData.user.id,
-              email,
-              name,
-              role,
-              phone: phone || null,
-              date_of_birth: dateOfBirth || null,
-              contract_signature_date: contractSignatureDate || null,
-              marital_status: maritalStatus || null,
-              contract_number: contractNumber || null,
-              echelon: echelon || null,
-              status: status || null,
-              office_position: officePosition || null,
-              city: city || null,
-              created_date: createdDate || null,
-              mad: mad || null,
-              creation_location: creationLocation || null,
-              district: district || null,
-              postal_code: postalCode || null
-            }, { onConflict: 'id' });
-
-          if (profileError) {
-            console.error('[Signup] app_users upsert failed:', profileError.message, profileError.details, profileError.hint);
-            throw profileError;
-          }
-
-          setShowEmailVerification(true);
-        }
-      } else {
-        const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (signInError) throw signInError;
-
-        if (authData.user) {
-          const { data: userData, error: fetchError } = await supabase
-            .from('app_users')
-            .select('*')
-            .eq('id', authData.user.id)
-            .maybeSingle();
-
-          if (fetchError) throw fetchError;
-
-          if (userData) {
-            onLoginSuccess({
-              id: userData.id,
-              name: userData.name,
-              email: userData.email,
-              phone: userData.phone || '',
-              birthDate: userData.birth_date || '',
-              role: userData.role,
-              profilePhoto: userData.profile_photo || '',
-              status: userData.status || '',
-              office_position: userData.office_position || '',
-              contractNumber: userData.contract_number || '',
-              echelon: userData.echelon || ''
-            }, userData.role);
-          }
-        }
+  const sendWelcomeEmail = async () => {
+    const response = await fetch(
+      'https://wwzenpgopftcqhhczmni.supabase.co/functions/v1/send-welcome-email',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: cleanEmail,
+          name: cleanName || 'Client',
+        }),
       }
-    } catch (err: any) {
-      console.error('[Auth] Error:', err.message, err);
-      const errorMessage = err.message || getText('Une erreur est survenue', 'An error occurred', 'حدث خطأ');
-      setError(translateError(errorMessage));
-    } finally {
-      setLoading(false);
+    );
+
+    const result = await response.text();
+    console.log('WELCOME EMAIL STATUS:', response.status);
+    console.log('WELCOME EMAIL RESPONSE:', result);
+
+    if (!response.ok) {
+      throw new Error(`Erreur email bienvenue: ${result}`);
     }
   };
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setResetMessage('');
+  try {
+    if (isSignUp) {
+      if (password !== passwordConfirm) {
+        throw new Error(getText('Les mots de passe ne correspondent pas', 'Passwords do not match', 'كلمات المرور غير متطابقة'));
+      }
 
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(forgotPasswordEmail, {
-        redirectTo: `${window.location.origin}`,
+      if (!phone) throw new Error(getText('Veuillez entrer votre numéro de téléphone', 'Please enter your phone number', 'الرجاء إدخال رقم هاتفك'));
+      if (!phone.startsWith('+')) throw new Error(getText('Le numéro doit commencer par un indicatif (ex: +224, +32)', 'Phone number must start with a country code (e.g. +224, +32)', 'يجب أن يبدأ الرقم برمز البلد (مثال: 224+، 32+)'));
+      if (!dateOfBirth) throw new Error(getText('Veuillez entrer votre date de naissance', 'Please enter your date of birth', 'الرجاء إدخال تاريخ ميلادك'));
+      if (!contractSignatureDate && role !== 'admin') throw new Error(getText('Veuillez entrer la date de signature du contrat', 'Please enter the contract signature date', 'الرجاء إدخال تاريخ توقيع العقد'));
+      if (role === 'client' && !city.trim()) throw new Error(getText('La ville de résidence est obligatoire pour les clients', 'City of residence is required for clients', 'مدينة الإقامة مطلوبة للعملاء'));
+      if ((role === 'client' || role === 'tech') && !contractNumber.trim()) throw new Error(getText('Le numéro de contrat est obligatoire', 'Contract number is required', 'رقم العقد مطلوب'));
+      if (role === 'admin' && !cleanEmail.endsWith('@tsdetfils.com')) throw new Error(getText('Les administrateurs doivent utiliser un email @tsdetfils.com', 'Administrators must use a @tsdetfils.com email', 'يجب على المسؤولين استخدام بريد إلكتروني @tsdetfils.com'));
+      if (role === 'admin' && !createdDate) throw new Error(getText('La date de création est obligatoire', 'Creation date is required', 'تاريخ الإنشاء مطلوب'));
+      if (role === 'admin' && !mad.trim()) throw new Error(getText('Le champ MAD est obligatoire', 'MAD field is required', 'حقل MAD مطلوب'));
+      if (role === 'admin' && !creationLocation.trim()) throw new Error(getText('Le lieu de création est obligatoire', 'Creation location is required', 'مكان الإنشاء مطلوب'));
+      if (role === 'admin' && !district.trim()) throw new Error(getText('Le quartier est obligatoire', 'District is required', 'الحي مطلوب'));
+      if (role === 'admin' && !postalCode.trim()) throw new Error(getText('Le code postal est obligatoire', 'Postal code is required', 'الرمز البريدي مطلوب'));
+      if (role === 'tech' && !echelon) throw new Error(getText('Veuillez sélectionner un échelon', 'Please select a rank', 'الرجاء تحديد رتبة'));
+      if (role === 'office' && !officePosition) throw new Error(getText('Veuillez sélectionner un poste', 'Please select a position', 'الرجاء تحديد منصب'));
+
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email: cleanEmail,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}`,
+          data: {
+            name: cleanName,
+            role,
+          },
+        },
       });
 
-      if (error) throw error;
+      if (signUpError) throw signUpError;
 
-      setResetMessage(
-        getText(
-          'Un email de réinitialisation a été envoyé à votre adresse',
-          'A password reset email has been sent to your address',
-          'تم إرسال بريد إلكتروني لإعادة تعيين كلمة المرور إلى عنوانك'
-        )
-      );
+      if (authData.user) {
+        const { error: profileError } = await supabase
+          .from('app_users')
+          .upsert({
+            id: authData.user.id,
+            email: cleanEmail,
+            name: cleanName,
+            role,
+            phone: phone || null,
+            date_of_birth: dateOfBirth || null,
+            contract_signature_date: contractSignatureDate || null,
+            marital_status: maritalStatus || null,
+            contract_number: contractNumber || null,
+            echelon: echelon || null,
+            status: status || null,
+            office_position: officePosition || null,
+            city: city || null,
+            created_date: createdDate || null,
+            mad: mad || null,
+            creation_location: creationLocation || null,
+            district: district || null,
+            postal_code: postalCode || null,
+          }, { onConflict: 'id' });
 
-      setTimeout(() => {
-        setShowForgotPassword(false);
-        setForgotPasswordEmail('');
-        setResetMessage('');
-      }, 3000);
-    } catch (error: any) {
-      setResetMessage(
-        getText(
-          `Erreur: ${translateError(error.message)}`,
-          `Error: ${error.message}`,
-          `خطأ: ${translateError(error.message)}`
-        )
-      );
-    } finally {
-      setLoading(false);
+        if (profileError) throw profileError;
+
+        await sendWelcomeEmail();
+        setShowEmailVerification(true);
+      }
+    } else {
+      const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password,
+      });
+
+      if (signInError) throw signInError;
+
+      if (authData.user) {
+        const { data: userData, error: fetchError } = await supabase
+          .from('app_users')
+          .select('*')
+          .eq('id', authData.user.id)
+          .maybeSingle();
+
+        if (fetchError) throw fetchError;
+
+        if (userData) {
+          onLoginSuccess({
+            id: userData.id,
+            name: userData.name,
+            email: userData.email,
+            phone: userData.phone || '',
+            birthDate: userData.birth_date || '',
+            role: userData.role,
+            profilePhoto: userData.profile_photo || '',
+            status: userData.status || '',
+            office_position: userData.office_position || '',
+            contractNumber: userData.contract_number || '',
+            echelon: userData.echelon || '',
+          }, userData.role);
+        }
+      }
     }
-  };
+  } catch (err: any) {
+    console.error('[Auth] Error:', err.message, err);
+    const errorMessage = err.message || getText('Une erreur est survenue', 'An error occurred', 'حدث خطأ');
+    setError(translateError(errorMessage));
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
