@@ -56,38 +56,33 @@ const CreateAccountForm = ({
     }));
   };
 
-  const sendWelcomeEmail = async () => {
+  const sendWelcomeEmail = async (email: string, name: string) => {
     const response = await fetch(
       'https://wwzenpgopftcqhhczmni.supabase.co/functions/v1/send-welcome-email',
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email.trim(),
-          name: formData.name.trim(),
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name }),
       }
     );
 
     const result = await response.text();
+    console.log('WELCOME EMAIL STATUS:', response.status);
     console.log('WELCOME EMAIL RESPONSE:', result);
 
-    if (!response.ok) {
-      console.error('Welcome email failed:', result);
-    }
+    return response.ok;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("HANDLE SUBMIT START");
     e.preventDefault();
 
+    const cleanEmail = formData.email.trim().toLowerCase();
+    const cleanName = formData.name.trim();
     const needsContractDate = formData.role !== 'admin';
 
     if (
-      !formData.name.trim() ||
-      !formData.email.trim() ||
+      !cleanName ||
+      !cleanEmail ||
       !formData.password ||
       !formData.date_of_birth ||
       !formData.marital_status ||
@@ -132,54 +127,26 @@ const CreateAccountForm = ({
     setMessage('');
 
     try {
-      const cleanEmail = formData.email.trim().toLowerCase();
-      const cleanName = formData.name.trim();
-
-      console.log("BEFORE SIGNUP");
-
-      const { data: authData, error: authError } =
-        await supabase.auth.signUp({
-          email: cleanEmail,
-          password: formData.password,
-          options: {
-            emailRedirectTo: window.location.origin,
-            data: {
-              name: cleanName,
-              role: formData.role,
-            },
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: cleanEmail,
+        password: formData.password,
+        options: {
+          emailRedirectTo: window.location.origin,
+          data: {
+            name: cleanName,
+            role: formData.role,
           },
-        });
-
-        console.log("AFTER SIGNUP", authData, authError);
+        },
+      });
 
       if (authError) {
-        if (
-          authError.message?.includes('already registered') ||
-          authError.message?.includes('User already registered')
-        ) {
-          setMessage('Un compte existe déjà avec cette adresse email.');
-          return;
-        }
-
         throw authError;
       }
 
-      console.log("CALLING WELCOME EMAIL");
+      await sendWelcomeEmail(cleanEmail, cleanName);
 
-      await sendWelcomeEmail();
-
-      if (!authData.user) {
-        setMessage(
-          lang === 'fr'
-            ? 'Compte créé. Vérifiez votre email.'
-            : 'Account created. Please check your email.'
-        );
-        return;
-      }
-
-      const { error: profileError } = await supabase
-        .from('app_users')
-        .upsert(
+      if (authData.user) {
+        const { error: profileError } = await supabase.from('app_users').upsert(
           {
             id: authData.user.id,
             email: cleanEmail,
@@ -191,8 +158,7 @@ const CreateAccountForm = ({
             status: formData.status || null,
             office_position: formData.office_position || null,
             date_of_birth: formData.date_of_birth,
-            contract_signature_date:
-              formData.contract_signature_date || null,
+            contract_signature_date: formData.contract_signature_date || null,
             marital_status: formData.marital_status,
             city: formData.city || null,
             contract_date:
@@ -202,21 +168,10 @@ const CreateAccountForm = ({
           { onConflict: 'id' }
         );
 
-      if (profileError) {
-        console.error('[CreateAccount] app_users upsert failed:', profileError);
-
-        if (
-          profileError.message?.includes('app_users_email_key') ||
-          profileError.message?.includes('duplicate key')
-        ) {
-          setMessage('Un compte existe déjà avec cette adresse email.');
-          return;
+        if (profileError) {
+          throw profileError;
         }
-
-        throw profileError;
       }
-
-      await sendWelcomeEmail();
 
       setMessage(
         lang === 'fr'
@@ -232,10 +187,10 @@ const CreateAccountForm = ({
       console.error('[CreateAccount] error:', error);
 
       if (
-        error?.message?.includes('duplicate key') ||
-        error?.message?.includes('app_users_email_key') ||
         error?.message?.includes('already registered') ||
-        error?.message?.includes('User already registered')
+        error?.message?.includes('User already registered') ||
+        error?.message?.includes('duplicate key') ||
+        error?.message?.includes('app_users_email_key')
       ) {
         setMessage('Un compte existe déjà avec cette adresse email.');
         return;
@@ -371,9 +326,7 @@ const CreateAccountForm = ({
         <input
           type="text"
           name="contract_number"
-          placeholder={
-            lang === 'fr' ? 'Numéro de contrat' : 'Contract number'
-          }
+          placeholder={lang === 'fr' ? 'Numéro de contrat' : 'Contract number'}
           value={formData.contract_number}
           onChange={handleChange}
           style={inputStyle}
@@ -394,9 +347,7 @@ const CreateAccountForm = ({
           <input
             type="text"
             name="office_position"
-            placeholder={
-              lang === 'fr' ? 'Poste de bureau' : 'Office position'
-            }
+            placeholder={lang === 'fr' ? 'Poste de bureau' : 'Office position'}
             value={formData.office_position}
             onChange={handleChange}
             style={inputStyle}
