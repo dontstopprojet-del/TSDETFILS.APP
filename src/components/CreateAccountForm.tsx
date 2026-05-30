@@ -74,9 +74,11 @@ const CreateAccountForm = ({
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  alert("HANDLE SUBMIT OK");
 
-    const cleanEmail = formData.email.trim().toLowerCase();
+  e.preventDefault();
+
+  const cleanEmail = formData.email.trim().toLowerCase();
     const cleanName = formData.name.trim();
     const needsContractDate = formData.role !== 'admin';
 
