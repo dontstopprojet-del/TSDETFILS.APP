@@ -26,6 +26,8 @@ import ProfileHeader from './ProfileHeader';
 import { NotificationProvider, useNotifications } from '../contexts/NotificationContext';
 import { incomingRingtone } from '../utils/ringtones';
 import BroadcastBanner from './BroadcastBanner';
+import ShareholderDashboard from './ShareholderDashboard';
+import PartnerDashboard from './PartnerDashboard';
 
 const Stars = ({ rating, setRating, size=28, readonly=false, goldColor='#FFD700' }: { rating: number; setRating?: (r: number) => void; size?: number; readonly?: boolean; goldColor?: string }) => (
   <div style={{display:'flex',gap:'3px',justifyContent:'center'}}>
@@ -4220,6 +4222,27 @@ const TSDApp = ({ onBackToVisitor, isPasswordRecovery }: { onBackToVisitor?: () 
           onToggleDarkMode={() => setDarkMode(!darkMode)}
         />
       )}
+
+      {isLoggedIn && !showWelcome && userRole === 'shareholder' && (
+  <ShareholderDashboard
+    currentUser={currentUser}
+    darkMode={darkMode}
+    lang={lang}
+    onBack={handleLogout}
+    onToggleDarkMode={() => setDarkMode(!darkMode)}
+  />
+)}
+
+{isLoggedIn && !showWelcome && userRole === 'partner' && (
+  <PartnerDashboard
+    currentUser={currentUser}
+    darkMode={darkMode}
+    lang={lang}
+    onBack={handleLogout}
+    onToggleDarkMode={() => setDarkMode(!darkMode)}
+  />
+)}
+
       {showSuccess && <SuccessModal/>}
       {showGpsMap && <GpsMapModal/>}
       {showAccountManager && (

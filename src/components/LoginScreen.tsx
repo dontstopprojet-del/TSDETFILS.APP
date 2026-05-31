@@ -1048,6 +1048,13 @@ const handleForgotPassword = async (e: React.FormEvent) => {
                 <option value="admin" style={{ background: darkMode ? '#2C3E50' : '#FFF' }}>
                   {getText('Administrateur', 'Administrator', 'مسؤول')}
                 </option>
+                <option value="shareholder" style={{ background: darkMode ? '#2C3E50' : '#FFF' }}>
+  {getText('Actionnaire', 'Shareholder', 'مساهم')}
+</option>
+
+<option value="partner" style={{ background: darkMode ? '#2C3E50' : '#FFF' }}>
+  {getText('Partenaire', 'Partner', 'شريك')}
+</option>
               </select>
             </div>
           )}
