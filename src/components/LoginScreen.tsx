@@ -130,16 +130,19 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
   const cleanEmail = email.trim().toLowerCase();
   const cleanName = name.trim();
 
+  console.log("ROLE:", role);
+
   const sendWelcomeEmail = async () => {
     const response = await fetch(
       'https://wwzenpgopftcqhhczmni.supabase.co/functions/v1/send-welcome-email',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: cleanEmail,
-          name: cleanName || 'Client',
-        }),
+       body: JSON.stringify({
+  email: cleanEmail,
+  name: cleanName || 'Client',
+  role
+}),
       }
     );
 
