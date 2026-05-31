@@ -4235,12 +4235,13 @@ const TSDApp = ({ onBackToVisitor, isPasswordRecovery }: { onBackToVisitor?: () 
 
 {isLoggedIn && !showWelcome && userRole === 'partner' && (
   <PartnerDashboard
-    currentUser={currentUser}
-    darkMode={darkMode}
-    lang={lang}
-    onBack={handleLogout}
-    onToggleDarkMode={() => setDarkMode(!darkMode)}
-  />
+  currentUser={currentUser}
+  darkMode={darkMode}
+  setDarkMode={setDarkMode}
+  lang={lang}
+  setLang={setLang}
+  onLogout={handleLogout}
+/>
 )}
 
       {showSuccess && <SuccessModal/>}
