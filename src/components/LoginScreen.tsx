@@ -141,10 +141,12 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
        body: JSON.stringify({
   email: cleanEmail,
   name: cleanName || 'Client',
-  role
+  role: role,
 }),
       }
     );
+
+    console.log('WELCOME ROLE:', role);
 
     const result = await response.text();
     console.log('WELCOME EMAIL STATUS:', response.status);
