@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { safeLocale, safeDate } from '../utils/safeFormat';
 
-interface ShareholderAppProps {
+interface PartnerAppProps {
   currentUser: any;
   darkMode: boolean;
   setDarkMode: (v: boolean) => void;
@@ -13,128 +13,134 @@ interface ShareholderAppProps {
 
 const i18n = {
   fr: {
-    home: 'Accueil', sharesTab: 'Actions', dividends: 'Dividendes', documents: 'Documents', profile: 'Profil',
-    totalShares: 'Total Actions', totalDividends: 'Total Dividendes', portfolioValue: 'Valeur Portefeuille',
-    activeProjects: 'Projets Actifs', totalRevenue: 'CA Total', employees: 'Effectifs',
-    certificate: 'Certificat', qty: 'Parts', price: 'Prix', acquired: 'Acquis', value: 'Valeur',
-    fiscalYear: 'Annee Fiscale', amount: 'Montant', status: 'Statut', paid: 'Paye', pending: 'En Attente',
-    noShares: 'Aucune action pour le moment', noDividends: 'Aucun dividende disponible',
+    home: 'Accueil', projects: 'Projets', revenue: 'Revenus', documents: 'Documents', profile: 'Profil',
+    activePartners: 'Partenariats Actifs', totalRevenue: 'Revenus Totaux', statusActive: 'Statut Actif',
+    ongoingProjects: 'Projets en cours', noProjects: 'Aucun projet en cours',
+    projectName: 'Projet', sharePercent: 'Part', startDate: 'Debut', endDate: 'Fin',
+    thisMonth: 'Ce mois', thisYear: 'Cette annee', perProject: 'Par Projet',
     settings: 'Parametres', legalDocs: 'Documents Legaux', faq: 'FAQ', logout: 'Deconnexion',
     darkMode: 'Mode Sombre', language: 'Langue', back: 'Retour', sign: 'Signer le document',
-    signedOn: 'Signe le', company: 'TSD ET FILS', subtitle: 'Espace Actionnaire', role: 'Actionnaire',
-    metrics: 'Metriques Entreprise', gnf: 'GNF'
+    signedOn: 'Signe le', company: 'TSD ET FILS', subtitle: 'Espace Partenaire', role: 'Partenaire',
+    gnf: 'GNF', active: 'Actif', completed: 'Termine', inactive: 'Inactif',
   },
   en: {
-    home: 'Home', sharesTab: 'Shares', dividends: 'Dividends', documents: 'Documents', profile: 'Profile',
-    totalShares: 'Total Shares', totalDividends: 'Total Dividends', portfolioValue: 'Portfolio Value',
-    activeProjects: 'Active Projects', totalRevenue: 'Total Revenue', employees: 'Employees',
-    certificate: 'Certificate', qty: 'Shares', price: 'Price', acquired: 'Acquired', value: 'Value',
-    fiscalYear: 'Fiscal Year', amount: 'Amount', status: 'Status', paid: 'Paid', pending: 'Pending',
-    noShares: 'No shares at this time', noDividends: 'No dividends available',
+    home: 'Home', projects: 'Projects', revenue: 'Revenue', documents: 'Documents', profile: 'Profile',
+    activePartners: 'Active Partnerships', totalRevenue: 'Total Revenue', statusActive: 'Active Status',
+    ongoingProjects: 'Ongoing Projects', noProjects: 'No active projects',
+    projectName: 'Project', sharePercent: 'Share', startDate: 'Start', endDate: 'End',
+    thisMonth: 'This Month', thisYear: 'This Year', perProject: 'Per Project',
     settings: 'Settings', legalDocs: 'Legal Documents', faq: 'FAQ', logout: 'Logout',
     darkMode: 'Dark Mode', language: 'Language', back: 'Back', sign: 'Sign document',
-    signedOn: 'Signed on', company: 'TSD ET FILS', subtitle: 'Shareholder Portal', role: 'Shareholder',
-    metrics: 'Company Metrics', gnf: 'GNF'
+    signedOn: 'Signed on', company: 'TSD ET FILS', subtitle: 'Partner Portal', role: 'Partner',
+    gnf: 'GNF', active: 'Active', completed: 'Completed', inactive: 'Inactive',
   }
 };
 
 const legalDocs = [
+  { key: 'partnership', fr: 'Accord de Partenariat', en: 'Partnership Agreement' },
   { key: 'confidentiality', fr: 'Politique de Confidentialite', en: 'Confidentiality Policy' },
-  { key: 'shareholder_pact', fr: "Pacte d'Actionnaires", en: "Shareholders' Agreement" },
-  { key: 'statutes', fr: 'Statuts de la Societe', en: 'Company Statutes' },
   { key: 'non_compete', fr: 'Clause de Non-Concurrence', en: 'Non-Compete Clause' },
-  { key: 'data_protection', fr: 'Protection des Donnees', en: 'Data Protection' },
-  { key: 'share_transfer', fr: "Clause de Cession d'Actions", en: 'Share Transfer Clause' },
-  { key: 'preemptive_rights', fr: 'Droit de Preemption', en: 'Preemptive Rights' },
-  { key: 'limited_liability', fr: 'Responsabilite Limitee', en: 'Limited Liability' },
+  { key: 'data_protection', fr: 'Protection des Donnees Personnelles', en: 'Personal Data Protection' },
+  { key: 'revenue_sharing', fr: 'Conditions de Partage des Revenus', en: 'Revenue Sharing Terms' },
+  { key: 'liability', fr: 'Clause de Responsabilite', en: 'Liability Clause' },
+  { key: 'termination', fr: 'Clause de Resiliation', en: 'Termination Clause' },
+  { key: 'intellectual_property', fr: 'Propriete Intellectuelle', en: 'Intellectual Property' },
+  { key: 'dispute_resolution', fr: 'Reglement des Litiges', en: 'Dispute Resolution' },
 ];
 
 const legalTexts: Record<string, string[]> = {
+  partnership: [
+    "Cet accord etablit les termes et conditions de la relation commerciale entre TSD ET FILS et le partenaire.",
+    "Le partenaire accepte de respecter tous les droits de propriete intellectuelle de TSD ET FILS.",
+    "Duree du partenariat: reconductible annuellement par accord mutuel des deux parties.",
+    "Obligations mutuelles de bonne foi et de cooperation dans l'execution du contrat.",
+    "Clause de revision annuelle des termes et conditions du partenariat.",
+    "Engagements reciproques en matiere de qualite des prestations fournies.",
+  ],
   confidentiality: [
-    "Confidentialite stricte de toutes les informations partagees entre TSD ET FILS et ses actionnaires.",
-    "Protection des donnees personnelles selon les standards internationaux applicables.",
-    "Restriction d'acces aux documents confidentiels aux seules parties autorisees.",
-    "Obligation de non-divulgation pour une periode de 5 ans minimum apres cessation.",
-    "Sanctions legales en cas de violation de confidentialite par une partie.",
-    "Exceptions uniquement pour obligations legales ou judiciaires dument constatees.",
-  ],
-  shareholder_pact: [
-    "Accord entre actionnaires regissant les relations et droits de chacun au sein de la societe.",
-    "Conditions d'entree et de sortie du capital social definies par les parties.",
-    "Droits de vote et pouvoirs de direction attribues selon la participation.",
-    "Mecanismes de resolution de litiges entre actionnaires (mediation, arbitrage).",
-    "Droit de preemption en cas de cession d'actions par un actionnaire.",
-    "Clauses de drag-along et tag-along pour proteger les minoritaires.",
-  ],
-  statutes: [
-    "Forme juridique: Societe a Responsabilite Limitee (SARL) de droit guineen.",
-    "Capital social defini et divise en parts sociales egalitaires.",
-    "Gerant(s) nommes selon les dispositions statutaires en assemblee.",
-    "Assemblee generale ordinaire tenue au moins une fois par an.",
-    "Remuneration du gerant et politique de distribution des dividendes.",
-    "Dissolution et liquidation selon la legislation en vigueur.",
+    "Confidentialite stricte de toutes les informations echangees dans le cadre du partenariat.",
+    "Interdiction de divulgation a des tiers sans accord prealable ecrit de TSD ET FILS.",
+    "Duree de l'obligation de confidentialite: 5 ans apres la fin du partenariat.",
+    "Protection speciale des donnees commerciales, techniques et financieres.",
+    "Sanctions contractuelles en cas de manquement a l'obligation de confidentialite.",
+    "Restitution obligatoire de tous les documents confidentiels a la fin du contrat.",
   ],
   non_compete: [
-    "Interdiction de concurrence pendant toute la duree du mandat d'actionnaire.",
-    "Restriction geographique applicable sur le territoire de la Republique de Guinee.",
-    "Duree post-mandat: 2 ans apres cessation de fonctions ou cession des parts.",
-    "Liste des activites explicitement interdites definie en annexe.",
-    "Compensation financiere prevue en cas de non-respect de la clause.",
-    "Clause de non-solicitation des clients et employes de TSD ET FILS.",
+    "Interdiction d'exercer une activite concurrente pendant la duree du partenariat.",
+    "Restriction geographique: territoire de la Republique de Guinee et pays limitrophes.",
+    "Duree post-contrat: 18 mois apres cessation du partenariat.",
+    "Definition precise des activites concurrentes interdites au partenaire.",
+    "Clause de non-sollicitation des clients de TSD ET FILS pendant 2 ans.",
+    "Indemnite compensatrice en cas de restriction excessive de liberte commerciale.",
   ],
   data_protection: [
-    "Conformite aux normes de protection des donnees personnelles des actionnaires.",
-    "Droit d'acces, rectification et suppression des donnees sur demande.",
-    "Consentement explicite requis pour tout traitement de donnees personnelles.",
-    "Securite renforcee des systemes informatiques hebergeant les donnees.",
-    "Notification obligatoire en cas de fuite ou violation de donnees.",
-    "Responsable de la protection des donnees designe au sein de la societe.",
+    "Respect des normes de protection des donnees personnelles en vigueur.",
+    "Traitement des donnees personnelles limite aux finalites du partenariat.",
+    "Securisation des donnees par des mesures techniques et organisationnelles.",
+    "Notification sous 48h en cas de violation de donnees personnelles.",
+    "Droit d'acces, de rectification et de suppression pour les personnes concernees.",
+    "Sous-traitance du traitement des donnees interdite sans accord prealable.",
   ],
-  share_transfer: [
-    "Restrictions a la cession libre d'actions sans accord prealable.",
-    "Notification prealable au gerant de toute cession envisagee (30 jours).",
-    "Droit de preemption de la SARL et des autres actionnaires existants.",
-    "Prix de cession determine selon des criteres d'evaluation definis.",
-    "Delai de retractation: 30 jours apres notification de la cession.",
-    "Signature obligatoire d'un acte de cession devant notaire.",
+  revenue_sharing: [
+    "Repartition des revenus selon le pourcentage contractuel defini par projet.",
+    "Versement des parts de revenus dans un delai de 30 jours apres facturation.",
+    "Transparence totale sur les revenus generes par chaque projet commun.",
+    "Audit annuel des comptes relatifs au partage des revenus sur demande.",
+    "Revision du pourcentage possible par accord mutuel tous les 12 mois.",
+    "Modalites de calcul clairement definies et opposables aux deux parties.",
   ],
-  preemptive_rights: [
-    "Droit de priorite pour l'acquisition de nouvelles actions emises.",
-    "Application prioritaire lors de toute augmentation de capital social.",
-    "Droit de suite en cas de cession par un autre actionnaire.",
-    "Delai d'exercice: 15 jours a compter de la notification officielle.",
-    "Exercice proportionnel a la participation actuelle dans le capital.",
-    "Conditions tarifaires preferentielles pour les actionnaires existants.",
+  liability: [
+    "Responsabilite de chaque partie limitee aux dommages directs et previsibles.",
+    "Plafond de responsabilite fixe au montant des revenus des 12 derniers mois.",
+    "Exclusion de responsabilite en cas de force majeure dument constatee.",
+    "Obligation d'assurance responsabilite civile professionnelle pour les deux parties.",
+    "Notification sous 5 jours de tout evenement pouvant engager la responsabilite.",
+    "Clause d'indemnisation reciproque en cas de manquement contractuel prouve.",
   ],
-  limited_liability: [
-    "Responsabilite de chaque actionnaire limitee au montant de son apport.",
-    "Aucune responsabilite personnelle sur les dettes sociales de la societe.",
-    "Exceptions: fraude, abus de biens sociaux, confusion de patrimoine.",
-    "Couverture d'assurance responsabilite civile mise en place par la societe.",
-    "Indemnisation du gerant selon les polices d'assurance souscrites.",
-    "Fonds de reserve constitue pour faire face aux situations de crise.",
+  termination: [
+    "Resiliation possible par chaque partie avec un preavis de 3 mois.",
+    "Resiliation immediate en cas de faute grave ou de manquement contractuel.",
+    "Fautes graves: non-paiement pendant 60 jours, violation de confidentialite, concurrence.",
+    "Effets de la resiliation: cessation des obligations futures, maintien des clauses survivantes.",
+    "Restitution des biens et documents dans un delai de 15 jours apres resiliation.",
+    "Reglement final des comptes dans les 30 jours suivant la date effective.",
+  ],
+  intellectual_property: [
+    "Chaque partie conserve la propriete de ses droits intellectuels preexistants.",
+    "Les creations conjointes appartiennent aux deux parties selon contribution.",
+    "Licence d'utilisation reciproque pendant la duree du partenariat uniquement.",
+    "Interdiction de depot de brevet ou marque sur les creations de l'autre partie.",
+    "Protection des secrets de fabrication et du savoir-faire technique.",
+    "Clause de retrocession des droits en cas de fin de partenariat.",
+  ],
+  dispute_resolution: [
+    "Tentative de resolution amiable obligatoire pendant 30 jours avant toute action.",
+    "Mediation par un mediateur agree en cas d'echec de la negociation directe.",
+    "Arbitrage selon les regles OHADA en cas d'echec de la mediation.",
+    "Tribunal competent: juridiction commerciale de Conakry, Republique de Guinee.",
+    "Loi applicable: droit commercial guineen et dispositions de l'OHADA.",
+    "Frais de procedure partages egalement entre les parties en premiere instance.",
   ],
 };
 
 const faqData = [
-  { q: { fr: "Quels sont mes droits en tant qu'actionnaire ?", en: "What are my rights as a shareholder?" }, a: { fr: "Vous avez le droit de vote aux assemblees generales, de recevoir des dividendes proportionnels a vos parts, et d'acceder aux informations financieres de la societe.", en: "You have voting rights at general meetings, the right to receive dividends proportional to your shares, and access to the company's financial information." }},
-  { q: { fr: "Comment sont distribues les dividendes ?", en: "How are dividends distributed?" }, a: { fr: "Les dividendes sont distribues apres approbation en assemblee generale annuelle. Le paiement s'effectue selon le calendrier etabli par le gerant.", en: "Dividends are distributed after approval at the annual general meeting. Payment follows the schedule set by the manager." }},
-  { q: { fr: "Puis-je transferer mes actions ?", en: "Can I transfer my shares?" }, a: { fr: "Oui, sous conditions: notification prealable, droit de preemption des autres actionnaires, et accord du gerant conformement au pacte d'actionnaires.", en: "Yes, subject to conditions: prior notification, pre-emption rights of other shareholders, and manager approval per the shareholder agreement." }},
-  { q: { fr: "Comment voter aux assemblees ?", en: "How do I vote at meetings?" }, a: { fr: "Un vote par action detenue. Les scrutins se font en assemblee generale annuelle ou extraordinaire sur convocation du gerant.", en: "One vote per share held. Voting occurs at annual or extraordinary general meetings called by the manager." }},
-  { q: { fr: "Qui contacter en cas de question ?", en: "Who should I contact?" }, a: { fr: "Contactez le siege social de TSD ET FILS ou l'adresse email du gerant. Tous les documents legaux sont disponibles dans votre espace.", en: "Contact TSD ET FILS head office or the manager's email. All legal documents are available in your portal." }},
+  { q: { fr: "Comment fonctionne le partage des revenus ?", en: "How does revenue sharing work?" }, a: { fr: "Les revenus sont partages selon le pourcentage defini dans votre contrat de partenariat. Le versement est effectue dans les 30 jours suivant la facturation de chaque projet.", en: "Revenue is shared according to the percentage defined in your partnership contract. Payment is made within 30 days of each project's invoicing." }},
+  { q: { fr: "Comment sont attribues les projets ?", en: "How are projects assigned?" }, a: { fr: "Les projets sont attribues en fonction des competences, de la disponibilite et des termes de votre accord de partenariat avec TSD ET FILS.", en: "Projects are assigned based on skills, availability, and the terms of your partnership agreement with TSD ET FILS." }},
+  { q: { fr: "Quelles sont mes responsabilites ?", en: "What are my responsibilities?" }, a: { fr: "Vous etes responsable de la qualite des prestations, du respect des delais, de la confidentialite et du respect des clauses de votre contrat.", en: "You are responsible for service quality, meeting deadlines, confidentiality, and compliance with your contract clauses." }},
+  { q: { fr: "Comment resilier le partenariat ?", en: "How do I terminate the partnership?" }, a: { fr: "La resiliation est possible avec un preavis de 3 mois. En cas de faute grave, la resiliation peut etre immediate. Consultez la clause de resiliation.", en: "Termination is possible with 3 months notice. In case of serious breach, immediate termination applies. See the termination clause." }},
+  { q: { fr: "Qui contacter en cas de probleme ?", en: "Who do I contact for issues?" }, a: { fr: "Contactez directement le siege social de TSD ET FILS ou votre referent partenariat. Tous les documents sont accessibles dans votre espace.", en: "Contact TSD ET FILS headquarters or your partnership representative. All documents are accessible in your portal." }},
 ];
 
-export default function ShareholderDashboard({ currentUser, darkMode, setDarkMode, lang, setLang, onLogout }: ShareholderAppProps) {
+export default function PartnerApp({ currentUser, darkMode, setDarkMode, lang, setLang, onLogout }: PartnerAppProps) {
   const [screen, setScreen] = useState<string>('home');
   const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
-  const [shares, setShares] = useState<any[]>([]);
-  const [dividends, setDividends] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
   const [agreements, setAgreements] = useState<any[]>([]);
-  const [stats, setStats] = useState({ projects: 0, revenue: 0, employees: 0 });
+  const [projectCount, setProjectCount] = useState(0);
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
 
   const C = {
-    primary: '#1e40af', secondary: '#3b82f6', accent: '#D4AF37', success: '#10B981', danger: '#EF4444',
+    primary: '#0891B2', secondary: '#06B6D4', accent: '#14B8A6', success: '#10B981', danger: '#EF4444',
     warning: '#F59E0B', card: darkMode ? '#1e293b' : '#FFFFFF', bg: darkMode ? '#0f172a' : '#f8fafc',
     gray: darkMode ? '#0f172a' : '#f1f5f9', light: darkMode ? '#334155' : '#e2e8f0',
     text: darkMode ? '#f1f5f9' : '#0f172a', textSecondary: darkMode ? '#94a3b8' : '#64748b',
@@ -147,39 +153,36 @@ export default function ShareholderDashboard({ currentUser, darkMode, setDarkMod
   useEffect(() => {
     if (!currentUser?.id) return;
     (async () => {
-      const [sharesRes, dividendsRes, agreementsRes] = await Promise.all([
-        supabase.from('shareholder_shares').select('*').eq('user_id', currentUser.id),
-        supabase.from('shareholder_dividends').select('*').eq('user_id', currentUser.id),
-        supabase.from('shareholder_agreements').select('*').eq('user_id', currentUser.id),
-      ]);
-      setShares(sharesRes.data || []);
-      setDividends(dividendsRes.data || []);
-      setAgreements(agreementsRes.data || []);
-      const [ch, inv, usr] = await Promise.all([
+      const [projRes, agrRes, chRes] = await Promise.all([
+        supabase.from('partner_projects').select('*').eq('partner_id', currentUser.id),
+        supabase.from('partner_agreements').select('*').eq('user_id', currentUser.id),
         supabase.from('chantiers').select('id', { count: 'exact', head: true }),
-        supabase.from('invoices').select('amount'),
-        supabase.from('app_users').select('id', { count: 'exact', head: true }),
       ]);
-      setStats({ projects: ch.count || 0, revenue: (inv.data || []).reduce((s: number, i: any) => s + (i.amount || 0), 0), employees: usr.count || 0 });
+      setProjects(projRes.data || []);
+      setAgreements(agrRes.data || []);
+      setProjectCount(chRes.count || 0);
     })();
   }, [currentUser?.id]);
 
   const signDoc = async (docKey: string) => {
-    await supabase.from('shareholder_agreements').insert([{ user_id: currentUser.id, agreement_type: docKey, signed_at: new Date().toISOString(), signature_text: `${currentUser.email}-${Date.now()}`, ip_address: '0.0.0.0' }]);
-    const res = await supabase.from('shareholder_agreements').select('*').eq('user_id', currentUser.id);
+    await supabase.from('partner_agreements').insert([{ user_id: currentUser.id, agreement_type: docKey, signed_at: new Date().toISOString(), signature_text: `${currentUser.email}-${Date.now()}`, ip_address: '0.0.0.0' }]);
+    const res = await supabase.from('partner_agreements').select('*').eq('user_id', currentUser.id);
     setAgreements(res.data || []);
   };
 
+  const getStatusColor = (s: string) => s === 'active' ? C.success : s === 'completed' ? C.secondary : C.textSecondary;
+  const getStatusLabel = (s: string) => s === 'active' ? txt.active : s === 'completed' ? txt.completed : txt.inactive;
+
   const navItems = [
     { k: 'home', i: '🏠', l: txt.home },
-    { k: 'shares', i: '📊', l: txt.sharesTab },
-    { k: 'dividends', i: '💰', l: txt.dividends },
+    { k: 'projects', i: '📁', l: txt.projects },
+    { k: 'revenue', i: '💹', l: txt.revenue },
     { k: 'documents', i: '📋', l: txt.documents },
     { k: 'profile', i: '👤', l: txt.profile },
   ];
 
   const Nav = () => (
-    <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: C.card, padding: '10px 8px 14px', display: 'flex', justifyContent: 'space-around', boxShadow: `0 -2px 20px ${darkMode ? 'rgba(0,0,0,0.6)' : 'rgba(30,64,175,0.08)'}`, borderRadius: '22px 22px 0 0', zIndex: 100, borderTop: `1px solid ${C.light}` }}>
+    <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: C.card, padding: '10px 8px 14px', display: 'flex', justifyContent: 'space-around', boxShadow: `0 -2px 20px ${darkMode ? 'rgba(0,0,0,0.6)' : 'rgba(8,145,178,0.08)'}`, borderRadius: '22px 22px 0 0', zIndex: 100, borderTop: `1px solid ${C.light}` }}>
       {navItems.map(x => (
         <button key={x.k} onClick={() => { setScreen(x.k); setSelectedDoc(null); }} style={{ background: screen === x.k ? `${C.primary}12` : 'transparent', border: 'none', cursor: 'pointer', padding: '8px 12px', borderRadius: '14px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}>
           <span style={{ fontSize: '18px' }}>{x.i}</span>
@@ -190,7 +193,6 @@ export default function ShareholderDashboard({ currentUser, darkMode, setDarkMod
     </div>
   );
 
-  // Document detail sub-screen
   if (selectedDoc) {
     const doc = legalDocs.find(d => d.key === selectedDoc);
     const signed = agreements.find(a => a.agreement_type === selectedDoc);
@@ -206,7 +208,7 @@ export default function ShareholderDashboard({ currentUser, darkMode, setDarkMod
             {content.map((point, i) => (
               <div key={i} style={{ marginBottom: i < content.length - 1 ? '12px' : 0, paddingBottom: i < content.length - 1 ? '12px' : 0, borderBottom: i < content.length - 1 ? `1px solid ${C.light}` : 'none' }}>
                 <p style={{ margin: 0, fontSize: '13px', lineHeight: '1.6', color: C.text }}>
-                  <span style={{ color: C.accent, fontWeight: 'bold' }}>•</span> {point}
+                  <span style={{ color: C.primary, fontWeight: 'bold' }}>•</span> {point}
                 </p>
               </div>
             ))}
@@ -225,7 +227,6 @@ export default function ShareholderDashboard({ currentUser, darkMode, setDarkMod
     );
   }
 
-  // Settings sub-screen
   if (screen === 'settings') {
     return (
       <div style={{ background: C.bg, minHeight: '100vh', color: C.text }}>
@@ -252,7 +253,6 @@ export default function ShareholderDashboard({ currentUser, darkMode, setDarkMod
     );
   }
 
-  // FAQ sub-screen
   if (screen === 'faq') {
     return (
       <div style={{ background: C.bg, minHeight: '100vh', color: C.text }}>
@@ -279,22 +279,20 @@ export default function ShareholderDashboard({ currentUser, darkMode, setDarkMod
     );
   }
 
-  // Main screens with bottom nav
-  const totalShares = shares.reduce((s, x) => s + (x.num_shares || 0), 0);
-  const totalDividends = dividends.reduce((s, x) => s + (x.amount || 0), 0);
-  const portfolioValue = shares.reduce((s, x) => s + ((x.num_shares || 0) * (x.share_price || 0)), 0);
+  const activeProjects = projects.filter(p => p.status === 'active').length;
+  const totalRevenue = projects.reduce((s, p) => s + Math.floor(2500000 * ((p.revenue_share_pct || 0) / 100)), 0);
   const initials = (currentUser?.name || currentUser?.email || 'U').substring(0, 2).toUpperCase();
 
   return (
     <div style={{ background: C.bg, minHeight: '100vh', color: C.text, paddingBottom: '100px' }}>
       {screen === 'home' && (
         <>
-          <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #1e40af, #2563eb)', color: '#fff', padding: '24px 16px', textAlign: 'center', borderRadius: '0 0 20px 20px' }}>
+          <div style={{ background: 'linear-gradient(135deg, #065F7C, #0891B2, #06B6D4)', color: '#fff', padding: '24px 16px', textAlign: 'center', borderRadius: '0 0 20px 20px' }}>
             <div style={{ fontSize: '20px', fontWeight: 700 }}>{txt.company}</div>
             <div style={{ fontSize: '13px', marginTop: '4px', opacity: 0.9 }}>{txt.subtitle}</div>
           </div>
           <div style={{ padding: '16px 12px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-            {[{ l: txt.totalShares, v: String(totalShares) }, { l: txt.totalDividends, v: safeLocale(totalDividends) + ' ' + txt.gnf }, { l: txt.portfolioValue, v: safeLocale(portfolioValue) + ' ' + txt.gnf }].map((s, i) => (
+            {[{ l: txt.activePartners, v: String(activeProjects) }, { l: txt.totalRevenue, v: safeLocale(totalRevenue) + ' ' + txt.gnf }, { l: txt.statusActive, v: txt.active }].map((s, i) => (
               <div key={i} style={{ background: C.card, padding: '14px 8px', borderRadius: '12px', border: `1px solid ${C.border}`, textAlign: 'center' }}>
                 <div style={{ fontSize: '10px', color: C.textSecondary, marginBottom: '6px' }}>{s.l}</div>
                 <div style={{ fontSize: '14px', fontWeight: 700, color: C.accent }}>{s.v}</div>
@@ -302,36 +300,31 @@ export default function ShareholderDashboard({ currentUser, darkMode, setDarkMod
             ))}
           </div>
           <div style={{ background: C.card, margin: '8px 12px', padding: '16px', borderRadius: '12px', border: `1px solid ${C.border}` }}>
-            <div style={{ fontWeight: 600, marginBottom: '12px', fontSize: '14px' }}>{txt.metrics}</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-              {[{ l: txt.activeProjects, v: stats.projects }, { l: txt.totalRevenue, v: safeLocale(stats.revenue) }, { l: txt.employees, v: stats.employees }].map((m, i) => (
-                <div key={i} style={{ textAlign: 'center', padding: '10px', background: C.bg, borderRadius: '8px' }}>
-                  <div style={{ fontSize: '10px', color: C.textSecondary, marginBottom: '4px' }}>{m.l}</div>
-                  <div style={{ fontSize: '16px', fontWeight: 700, color: C.primary }}>{m.v}</div>
-                </div>
-              ))}
-            </div>
+            <div style={{ fontWeight: 600, marginBottom: '8px', fontSize: '14px' }}>{txt.ongoingProjects}</div>
+            <div style={{ fontSize: '28px', fontWeight: 700, color: C.primary }}>{projectCount}</div>
           </div>
         </>
       )}
 
-      {screen === 'shares' && (
+      {screen === 'projects' && (
         <>
-          <div style={{ padding: '16px', borderBottom: `1px solid ${C.light}`, fontWeight: 600, fontSize: '16px' }}>{txt.sharesTab}</div>
-          {shares.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px 16px', color: C.textSecondary }}>{txt.noShares}</div>
+          <div style={{ padding: '16px', borderBottom: `1px solid ${C.light}`, fontWeight: 600, fontSize: '16px' }}>{txt.projects}</div>
+          {projects.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px 16px', color: C.textSecondary }}>{txt.noProjects}</div>
           ) : (
             <div style={{ padding: '12px' }}>
-              {shares.map((s, i) => (
-                <div key={i} style={{ background: C.card, padding: '14px', marginBottom: '8px', borderRadius: '12px', border: `1px solid ${C.border}` }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span style={{ fontWeight: 600, fontSize: '14px' }}>{s.certificate_number || '-'}</span>
-                    <span style={{ fontSize: '14px', color: C.accent, fontWeight: 700 }}>{safeLocale((s.num_shares || 0) * (s.share_price || 0))} {txt.gnf}</span>
+              {projects.map((p, i) => (
+                <div key={i} style={{ background: C.card, padding: '14px', marginBottom: '10px', borderRadius: '12px', border: `1px solid ${C.border}` }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ fontWeight: 600, fontSize: '14px' }}>{p.project_name}</span>
+                    <span style={{ background: getStatusColor(p.status), color: '#fff', padding: '4px 10px', borderRadius: '6px', fontSize: '10px', fontWeight: 600 }}>{getStatusLabel(p.status)}</span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '12px', color: C.textSecondary }}>
-                    <div>{txt.qty}: {s.num_shares}</div>
-                    <div>{txt.price}: {safeLocale(s.share_price)}</div>
-                    <div>{txt.acquired}: {safeDate(s.acquired_at, lang)}</div>
+                  <div style={{ fontSize: '12px', color: C.textSecondary, marginBottom: '6px' }}>
+                    {safeDate(p.start_date, lang)} - {safeDate(p.end_date, lang)}
+                  </div>
+                  {p.description && <div style={{ fontSize: '12px', color: C.textSecondary, marginBottom: '8px' }}>{p.description}</div>}
+                  <div style={{ borderTop: `1px solid ${C.light}`, paddingTop: '8px', fontSize: '13px', color: C.accent, fontWeight: 700 }}>
+                    {txt.sharePercent}: {p.revenue_share_pct}%
                   </div>
                 </div>
               ))}
@@ -340,27 +333,31 @@ export default function ShareholderDashboard({ currentUser, darkMode, setDarkMod
         </>
       )}
 
-      {screen === 'dividends' && (
+      {screen === 'revenue' && (
         <>
-          <div style={{ padding: '16px', borderBottom: `1px solid ${C.light}`, fontWeight: 600, fontSize: '16px' }}>{txt.dividends}</div>
-          {dividends.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px 16px', color: C.textSecondary }}>{txt.noDividends}</div>
-          ) : (
-            <div style={{ padding: '12px' }}>
-              {dividends.map((d, i) => (
-                <div key={i} style={{ background: C.card, padding: '14px', marginBottom: '8px', borderRadius: '12px', border: `1px solid ${C.border}` }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span style={{ fontWeight: 600, fontSize: '14px' }}>{d.fiscal_year}</span>
-                    <span style={{ background: d.status === 'paid' ? C.success : C.warning, color: '#fff', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 600 }}>{d.status === 'paid' ? txt.paid : txt.pending}</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: C.textSecondary }}>
-                    <span>{safeLocale(d.amount)} {txt.gnf}</span>
-                    <span>{safeDate(d.distributed_at, lang)}</span>
-                  </div>
+          <div style={{ padding: '16px', borderBottom: `1px solid ${C.light}`, fontWeight: 600, fontSize: '16px' }}>{txt.revenue}</div>
+          <div style={{ padding: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+              <div style={{ background: C.card, padding: '14px', borderRadius: '12px', border: `1px solid ${C.border}` }}>
+                <div style={{ fontSize: '11px', color: C.textSecondary, marginBottom: '6px' }}>{txt.thisMonth}</div>
+                <div style={{ fontSize: '18px', fontWeight: 700, color: C.primary }}>185K {txt.gnf}</div>
+              </div>
+              <div style={{ background: C.card, padding: '14px', borderRadius: '12px', border: `1px solid ${C.border}` }}>
+                <div style={{ fontSize: '11px', color: C.textSecondary, marginBottom: '6px' }}>{txt.thisYear}</div>
+                <div style={{ fontSize: '18px', fontWeight: 700, color: C.secondary }}>2.1M {txt.gnf}</div>
+              </div>
+            </div>
+            <div style={{ background: C.card, padding: '14px', borderRadius: '12px', border: `1px solid ${C.border}` }}>
+              <div style={{ fontWeight: 600, marginBottom: '10px', fontSize: '14px' }}>{txt.perProject}</div>
+              {projects.map((p, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: i < projects.length - 1 ? `1px solid ${C.light}` : 'none', fontSize: '13px' }}>
+                  <span style={{ color: C.text }}>{p.project_name}</span>
+                  <span style={{ color: C.accent, fontWeight: 700 }}>{safeLocale(Math.floor(2500000 * ((p.revenue_share_pct || 0) / 100)))} {txt.gnf}</span>
                 </div>
               ))}
+              {projects.length === 0 && <div style={{ color: C.textSecondary, fontSize: '13px' }}>{txt.noProjects}</div>}
             </div>
-          )}
+          </div>
         </>
       )}
 
@@ -385,7 +382,7 @@ export default function ShareholderDashboard({ currentUser, darkMode, setDarkMod
       {screen === 'profile' && (
         <>
           <div style={{ padding: '24px 16px', textAlign: 'center', background: C.card, borderBottom: `1px solid ${C.light}` }}>
-            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, #1e3a8a, #2563eb)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontWeight: 700, fontSize: '22px' }}>{initials}</div>
+            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, #065F7C, #0891B2)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontWeight: 700, fontSize: '22px' }}>{initials}</div>
             <div style={{ fontWeight: 700, fontSize: '16px', marginBottom: '4px' }}>{currentUser?.name || currentUser?.email}</div>
             <div style={{ fontSize: '13px', color: C.textSecondary }}>{txt.role}</div>
           </div>
