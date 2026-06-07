@@ -13,10 +13,10 @@ const AdminSettings = ({ darkMode, lang, onBack, currentUser, onToggleDarkMode }
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
-  const defaultLegalTermsFr = `MENTIONS LÉGALES - TSD ET FILS
+  const defaultLegalTermsFr = `MENTIONS LÉGALES - TSDFILS SARLU
 
 1. INFORMATIONS GÉNÉRALES
-TSD et Fils est une entreprise spécialisée dans les services techniques et de sécurité en Guinée.
+TSDFILS SARLU est une entreprise spécialisée dans les services techniques et de sécurité en Guinée.
 
 2. PROPRIÉTÉ INTELLECTUELLE
 Tous les contenus présents sur cette application (textes, images, logos) sont protégés par le droit de la propriété intellectuelle.
@@ -25,15 +25,15 @@ Tous les contenus présents sur cette application (textes, images, logos) sont p
 Conformément à la réglementation, nous nous engageons à protéger vos données personnelles. Les données collectées sont utilisées uniquement dans le cadre de nos services.
 
 4. RESPONSABILITÉ
-TSD et Fils s'efforce de fournir des informations exactes, mais ne peut garantir l'exactitude complète des données affichées.
+TSDFILS SARLU s'efforce de fournir des informations exactes, mais ne peut garantir l'exactitude complète des données affichées.
 
 5. CONTACT
 Pour toute question concernant ces mentions légales, contactez-nous à : contact@tsdetfils.gn`;
 
-  const defaultLegalTermsEn = `LEGAL TERMS - TSD ET FILS
+  const defaultLegalTermsEn = `LEGAL TERMS - TSDFILS SARLU
 
 1. GENERAL INFORMATION
-TSD et Fils is a company specialized in technical and security services in Guinea.
+TSDFILS SARLU is a company specialized in technical and security services in Guinea.
 
 2. INTELLECTUAL PROPERTY
 All content on this application (texts, images, logos) is protected by intellectual property rights.
@@ -42,15 +42,15 @@ All content on this application (texts, images, logos) is protected by intellect
 In accordance with regulations, we are committed to protecting your personal data. Collected data is used only for our services.
 
 4. LIABILITY
-TSD et Fils strives to provide accurate information but cannot guarantee complete accuracy of displayed data.
+TSDFILS SARLU strives to provide accurate information but cannot guarantee complete accuracy of displayed data.
 
 5. CONTACT
 For any questions about these legal terms, contact us at: contact@tsdetfils.gn`;
 
-  const defaultLegalTermsAr = `الشروط القانونية - TSD ET FILS
+  const defaultLegalTermsAr = `الشروط القانونية - TSDFILS SARLU
 
 1. معلومات عامة
-TSD et Fils هي شركة متخصصة في الخدمات الفنية والأمنية في غينيا.
+TSDFILS SARLU هي شركة متخصصة في الخدمات الفنية والأمنية في غينيا.
 
 2. الملكية الفكرية
 جميع المحتويات الموجودة على هذا التطبيق (النصوص والصور والشعارات) محمية بموجب حقوق الملكية الفكرية.
@@ -59,7 +59,7 @@ TSD et Fils هي شركة متخصصة في الخدمات الفنية والأ
 وفقًا للوائح، نحن ملتزمون بحماية بياناتك الشخصية. يتم استخدام البيانات المجمعة فقط لخدماتنا.
 
 4. المسؤولية
-تسعى TSD et Fils جاهدة لتقديم معلومات دقيقة ولكن لا يمكنها ضمان الدقة الكاملة للبيانات المعروضة.
+تسعى TSDFILS SARLU جاهدة لتقديم معلومات دقيقة ولكن لا يمكنها ضمان الدقة الكاملة للبيانات المعروضة.
 
 5. الاتصال
 لأي أسئلة حول هذه الشروط القانونية، اتصل بنا على: contact@tsdetfils.gn`;
@@ -68,7 +68,7 @@ TSD et Fils هي شركة متخصصة في الخدمات الفنية والأ
     legal_terms_fr: defaultLegalTermsFr,
     legal_terms_en: defaultLegalTermsEn,
     legal_terms_ar: defaultLegalTermsAr,
-    company_name: 'TSD et Fils',
+    company_name: 'TSDFILS SARLU',
     company_description: '',
     company_founded: '',
     company_location: '',
@@ -211,7 +211,7 @@ TSD et Fils هي شركة متخصصة في الخدمات الفنية والأ
           } else if (item.setting_key === 'company_info') {
             try {
               const companyData = JSON.parse(item.setting_value);
-              newSettings.company_name = companyData.name || 'TSD et Fils';
+              newSettings.company_name = companyData.name || 'TSDFILS SARLU';
               newSettings.company_description = companyData.description || '';
               newSettings.company_founded = companyData.founded || '';
               newSettings.company_location = companyData.location || '';

@@ -60,7 +60,7 @@ const INITIAL_LATE_FEE_PERCENT = 2;
 const WEEKLY_LATE_FEE_PERCENT = 5;
 
 const DEFAULT_INVOICE_NOTE =
-  `IMPORTANT : Conformement aux conditions generales de TSD et Fils :\n\n1. Tout retard de paiement au-dela de la date d'echeance entrainera des frais de penalite de ${INITIAL_LATE_FEE_PERCENT}% du montant total de la facture, appliques automatiquement des le lendemain de la date d'echeance.\n\n2. En cas de non-reglement prolonge, une penalite supplementaire de ${WEEKLY_LATE_FEE_PERCENT}% sera ajoutee pour chaque semaine de retard supplementaire (a partir de la 2eme semaine).\n\nExemple : Pour une facture de 10 000 000 GNF echue le 21/02/2026 :\n- Le 22/02/2026 : +${INITIAL_LATE_FEE_PERCENT}% = 10 200 000 GNF\n- Le 01/03/2026 (1 semaine) : +${WEEKLY_LATE_FEE_PERCENT}% supplementaire = 10 700 000 GNF\n- Le 08/03/2026 (2 semaines) : +${WEEKLY_LATE_FEE_PERCENT}% supplementaire = 11 200 000 GNF\n\nMerci de respecter les delais de paiement pour eviter ces frais supplementaires.`;
+  `IMPORTANT : Conformement aux conditions generales de TSDFILS SARLU :\n\n1. Tout retard de paiement au-dela de la date d'echeance entrainera des frais de penalite de ${INITIAL_LATE_FEE_PERCENT}% du montant total de la facture, appliques automatiquement des le lendemain de la date d'echeance.\n\n2. En cas de non-reglement prolonge, une penalite supplementaire de ${WEEKLY_LATE_FEE_PERCENT}% sera ajoutee pour chaque semaine de retard supplementaire (a partir de la 2eme semaine).\n\nExemple : Pour une facture de 10 000 000 GNF echue le 21/02/2026 :\n- Le 22/02/2026 : +${INITIAL_LATE_FEE_PERCENT}% = 10 200 000 GNF\n- Le 01/03/2026 (1 semaine) : +${WEEKLY_LATE_FEE_PERCENT}% supplementaire = 10 700 000 GNF\n- Le 08/03/2026 (2 semaines) : +${WEEKLY_LATE_FEE_PERCENT}% supplementaire = 11 200 000 GNF\n\nMerci de respecter les delais de paiement pour eviter ces frais supplementaires.`;
 
 const calculateLateFee = (invoice: Invoice): {
   isLate: boolean;
@@ -417,35 +417,6 @@ const EnhancedInvoiceManager: React.FC<EnhancedInvoiceManagerProps> = ({ userRol
 
     try {
       setLoading(true);
-
-   const emailResponse = await fetch(
-  "https://wwzenpgopftcqhhczmni.supabase.co/functions/v1/send-invoice-email",
-  {
-    method: "POST",
-   headers: {
-  "Content-Type": "application/json",
-  apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-  Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-},
-    body: JSON.stringify({
-      clientEmail: sendEmail,
-      invoiceNumber: invoiceToSend.invoice_number,
-      clientName: invoiceToSend.client_name,
-      amount: invoiceToSend.amount || 0,
-      dueDate: invoiceToSend.due_date || "",
-    }),
-  }
-);
-
-if (!emailResponse.ok) {
-  const errorText = await emailResponse.text();
-  console.error("Erreur Edge Function:", errorText);
-  alert("Erreur email : " + errorText);
-  return;
-}
-
-const result = await emailResponse.json();
-console.log("EMAIL OK :", result);
 
       const { error: updateError } = await supabase
         .from('invoices')

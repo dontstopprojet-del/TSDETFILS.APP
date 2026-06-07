@@ -107,7 +107,7 @@ export default function SalaryEmployeePanel({ currentUser, darkMode }: Props) {
 
   const exportPayslip = (fiche: FichePaie) => {
     const content = `
-FICHE DE PAIE - TSD & Fils
+FICHE DE PAIE - TSDFILS SARLU
 ===========================
 Employé : ${currentUser?.name || 'N/A'}
 Poste   : ${currentUser?.role || 'N/A'}

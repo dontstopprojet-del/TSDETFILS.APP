@@ -1,41 +1,36 @@
-export function safeNumber(value: unknown, fallback = 0): number {
-  if (value === null || value === undefined) return fallback;
-  const n = Number(value);
-  return Number.isFinite(n) ? n : fallback;
+export function safeLocale(val: number | string | null | undefined, _lang?: string): string {
+  const num = Number(val);
+  if (isNaN(num)) return '0';
+  return num.toLocaleString('fr-FR');
 }
 
-export function safeText(value: unknown, fallback = 'N/A'): string {
-  if (value === null || value === undefined || value === '') return fallback;
-  return String(value);
+export function safeNumber(val: unknown, fallback: number = 0): number {
+  const num = Number(val);
+  return isNaN(num) ? fallback : num;
 }
 
-export function safeLocale(value: unknown): string {
-  return safeNumber(value).toLocaleString();
+export function safeText(val: string | null | undefined, fallback: string = '-'): string {
+  return val ?? fallback;
 }
 
-export function safeFixed(value: unknown, digits = 2, fallback = '0'): string {
-  if (value === null || value === undefined) return fallback;
-  const n = Number(value);
-  return Number.isFinite(n) ? n.toFixed(digits) : fallback;
+export function safeFixed(val: number | string | null | undefined, decimals: number = 2, fallback: string = '0'): string {
+  const num = Number(val);
+  if (isNaN(num)) return fallback;
+  return num.toFixed(decimals);
 }
 
-export function safeCoord(row: Record<string, unknown>): { lat: number; lng: number } | null {
-  const lat = Number(row.lat ?? row.latitude ?? NaN);
-  const lng = Number(row.lng ?? row.longitude ?? NaN);
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-  return { lat, lng };
-}
-
-export function safeDate(value: unknown, lang = 'fr'): string {
-  if (!value) return 'N/A';
+export function safeDate(val: string | Date | null | undefined, lang?: string): string {
+  if (!val) return '-';
   try {
-    const d = new Date(String(value));
-    if (isNaN(d.getTime())) return 'N/A';
-    return new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-US', {
-      dateStyle: 'short',
-      timeStyle: 'short',
-    }).format(d);
+    const d = val instanceof Date ? val : new Date(val);
+    if (isNaN(d.getTime())) return '-';
+    const locale = lang === 'en' ? 'en-US' : 'fr-FR';
+    return d.toLocaleDateString(locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
   } catch {
-    return 'N/A';
+    return '-';
   }
 }

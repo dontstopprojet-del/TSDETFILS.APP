@@ -62,7 +62,7 @@ const IntelligentChatbot = ({ darkMode, lang, onClose, currentUser }: ChatbotPro
   };
 
   const t = lang === 'fr' ? {
-    title: 'Assistant Intelligent TSD',
+    title: 'Assistant Intelligent TSDFILS',
     subtitle: 'Disponible 24/7 pour vous aider',
     placeholder: 'Posez votre question...',
     send: 'Envoyer',
@@ -73,7 +73,7 @@ const IntelligentChatbot = ({ darkMode, lang, onClose, currentUser }: ChatbotPro
     saveConversation: 'Sauvegarder',
     newConversation: 'Nouvelle conversation',
   } : lang === 'en' ? {
-    title: 'TSD Intelligent Assistant',
+    title: 'TSDFILS Intelligent Assistant',
     subtitle: 'Available 24/7 to help you',
     placeholder: 'Ask your question...',
     send: 'Send',
@@ -84,7 +84,7 @@ const IntelligentChatbot = ({ darkMode, lang, onClose, currentUser }: ChatbotPro
     saveConversation: 'Save',
     newConversation: 'New conversation',
   } : {
-    title: 'مساعد TSD الذكي',
+    title: 'مساعد TSDFILS الذكي',
     subtitle: 'متاح 24/7 لمساعدتك',
     placeholder: 'اسأل سؤالك...',
     send: 'إرسال',
@@ -99,8 +99,8 @@ const IntelligentChatbot = ({ darkMode, lang, onClose, currentUser }: ChatbotPro
   const knowledgeBase: Record<string, KnowledgeItem> = {
     company: {
       response: lang === 'fr'
-        ? '🏢 TSD & FILS - Excellence en Plomberie Pro\n\n✨ Qui sommes-nous?\nEntreprise guinéenne de référence fondée par un expert formé en Belgique avec 6+ ans d\'expérience européenne.\n\n📍 Basée à Conakry, Guinée\n🎯 Spécialiste en plomberie professionnelle\n🏆 Certification ISO & normes européennes\n💼 Services B2B et particuliers\n🌟 100+ projets réalisés en Belgique\n\n🔧 Notre expertise:\n• Installation sanitaire complète\n• Systèmes de chauffage moderne\n• Plomberie industrielle\n• Maintenance préventive\n• Solutions d\'urgence 24/7\n\n💰 Tarifs:\n• Devis GRATUIT\n• Deplacement en ville jusqu\'a la Cimenterie: 120 000 GNF\n• De la Cimenterie au reste de Conakry: 290 000 GNF\n• Hors Conakry (ex: Kindia): a partir de 1 150 000 GNF'
-        : '🏢 TSD & FILS - Professional Plumbing Excellence\n\n✨ Who we are?\nLeading Guinean company founded by a Belgium-trained expert with 6+ years European experience.\n\n📍 Based in Conakry, Guinea\n🎯 Professional plumbing specialist\n🏆 ISO certified & European standards\n💼 B2B and individual services\n🌟 100+ projects completed in Belgium\n\n🔧 Our expertise:\n• Complete sanitary installation\n• Modern heating systems\n• Industrial plumbing\n• Preventive maintenance\n• 24/7 emergency solutions\n\n💰 Pricing:\n• FREE Quote\n• Travel in city to Cimenterie: 120,000 GNF\n• From Cimenterie to rest of Conakry: 290,000 GNF\n• Outside Conakry (e.g. Kindia): from 1,150,000 GNF',
+        ? '🏢 TSDFILS SARLU - Excellence en Plomberie Pro\n\n✨ Qui sommes-nous?\nEntreprise guinéenne de référence fondée par un expert formé en Belgique avec 6+ ans d\'expérience européenne.\n\n📍 Basée à Conakry, Guinée\n🎯 Spécialiste en plomberie professionnelle\n🏆 Certification ISO & normes européennes\n💼 Services B2B et particuliers\n🌟 100+ projets réalisés en Belgique\n\n🔧 Notre expertise:\n• Installation sanitaire complète\n• Systèmes de chauffage moderne\n• Plomberie industrielle\n• Maintenance préventive\n• Solutions d\'urgence 24/7\n\n💰 Tarifs:\n• Devis GRATUIT\n• Deplacement en ville jusqu\'a la Cimenterie: 120 000 GNF\n• De la Cimenterie au reste de Conakry: 290 000 GNF\n• Hors Conakry (ex: Kindia): a partir de 1 150 000 GNF'
+        : '🏢 TSDFILS SARLU - Professional Plumbing Excellence\n\n✨ Who we are?\nLeading Guinean company founded by a Belgium-trained expert with 6+ years European experience.\n\n📍 Based in Conakry, Guinea\n🎯 Professional plumbing specialist\n🏆 ISO certified & European standards\n💼 B2B and individual services\n🌟 100+ projects completed in Belgium\n\n🔧 Our expertise:\n• Complete sanitary installation\n• Modern heating systems\n• Industrial plumbing\n• Preventive maintenance\n• 24/7 emergency solutions\n\n💰 Pricing:\n• FREE Quote\n• Travel in city to Cimenterie: 120,000 GNF\n• From Cimenterie to rest of Conakry: 290,000 GNF\n• Outside Conakry (e.g. Kindia): from 1,150,000 GNF',
       keywords: ['tsd', 'fils', 'entreprise', 'qui', 'societe', 'company', 'about', 'presentation', 'histoire'],
       category: 'company',
       relatedTopics: ['services', 'garantie', 'techniciens'],
@@ -147,8 +147,8 @@ const IntelligentChatbot = ({ darkMode, lang, onClose, currentUser }: ChatbotPro
     },
     contact: {
       response: lang === 'fr'
-        ? '📞 NOUS CONTACTER\n\n🏢 INFORMATIONS PRINCIPALES:\n\n📧 Email général:\ncontact@tsdetfils.com\n\n📱 Téléphone principal:\n+224 610 55 32 55\n\n📍 Adresse physique:\nKaloum, Avenue de la République\nConakry, République de Guinée\n\n🌐 En ligne:\n• Site web: www.tsdetfils.com\n• Facebook: @TSDEtFils\n• Instagram: @tsd_et_fils_pro\n• LinkedIn: TSD & FILS\n\n🕐 HORAIRES D\'OUVERTURE:\n\n📅 Lundi - Vendredi:\n8h00 - 18h00 (sans interruption)\n\n📅 Samedi:\n9h00 - 14h00\n\n📅 Dimanche:\nFermé (sauf urgences)\n\n🚨 Urgences 24/7:\nTous les jours, jour et nuit\n\n💬 SUPPORT CLIENT:\n\n📧 Email support:\nsupport@tsdetfils.com\nRéponse sous 2h (heures bureau)\n\n💬 Chat en ligne:\nSur le site web\nRéponse instantanée\n\n📱 WhatsApp Business:\n+224 610 55 32 55\nRéponse sous 30 min\n\n📞 Hotline gratuite:\nAppel gratuit depuis Guinée\n\n🗓️ PRENDRE RDV:\n• Via l\'application\n• Par téléphone\n• Sur le site web\n• En personne au bureau'
-        : '📞 CONTACT US\n\n🏢 MAIN INFORMATION:\n\n📧 General email:\ncontact@tsdetfils.com\n\n📱 Main phone:\n+224 610 55 32 55\n\n📍 Physical address:\nKaloum, Avenue de la République\nConakry, Republic of Guinea\n\n🌐 Online:\n• Website: www.tsdetfils.com\n• Facebook: @TSDEtFils\n• Instagram: @tsd_et_fils_pro\n• LinkedIn: TSD & FILS\n\n🕐 OPENING HOURS:\n\n📅 Monday - Friday:\n8:00 AM - 6:00 PM (continuous)\n\n📅 Saturday:\n9:00 AM - 2:00 PM\n\n📅 Sunday:\nClosed (except emergencies)\n\n🚨 24/7 Emergencies:\nEvery day, day and night\n\n💬 CUSTOMER SUPPORT:\n\n📧 Support email:\nsupport@tsdetfils.com\nResponse within 2h (office hours)\n\n💬 Online chat:\nOn website\nInstant response\n\n📱 WhatsApp Business:\n+224 610 55 32 55\nResponse within 30 min\n\n📞 Free hotline:\nFree call from Guinea\n\n🗓️ MAKE APPOINTMENT:\n• Via app\n• By phone\n• On website\n• In person at office',
+        ? '📞 NOUS CONTACTER\n\n🏢 INFORMATIONS PRINCIPALES:\n\n📧 Email général:\ncontact@tsdetfils.com\n\n📱 Téléphone principal:\n+224 610 55 32 55\n\n📍 Adresse physique:\nKaloum, Avenue de la République\nConakry, République de Guinée\n\n🌐 En ligne:\n• Site web: www.tsdetfils.com\n• Facebook: @TSDEtFils\n• Instagram: @tsd_et_fils_pro\n• LinkedIn: TSDFILS SARLU\n\n🕐 HORAIRES D\'OUVERTURE:\n\n📅 Lundi - Vendredi:\n8h00 - 18h00 (sans interruption)\n\n📅 Samedi:\n9h00 - 14h00\n\n📅 Dimanche:\nFermé (sauf urgences)\n\n🚨 Urgences 24/7:\nTous les jours, jour et nuit\n\n💬 SUPPORT CLIENT:\n\n📧 Email support:\nsupport@tsdetfils.com\nRéponse sous 2h (heures bureau)\n\n💬 Chat en ligne:\nSur le site web\nRéponse instantanée\n\n📱 WhatsApp Business:\n+224 610 55 32 55\nRéponse sous 30 min\n\n📞 Hotline gratuite:\nAppel gratuit depuis Guinée\n\n🗓️ PRENDRE RDV:\n• Via l\'application\n• Par téléphone\n• Sur le site web\n• En personne au bureau'
+        : '📞 CONTACT US\n\n🏢 MAIN INFORMATION:\n\n📧 General email:\ncontact@tsdetfils.com\n\n📱 Main phone:\n+224 610 55 32 55\n\n📍 Physical address:\nKaloum, Avenue de la République\nConakry, Republic of Guinea\n\n🌐 Online:\n• Website: www.tsdetfils.com\n• Facebook: @TSDEtFils\n• Instagram: @tsd_et_fils_pro\n• LinkedIn: TSDFILS SARLU\n\n🕐 OPENING HOURS:\n\n📅 Monday - Friday:\n8:00 AM - 6:00 PM (continuous)\n\n📅 Saturday:\n9:00 AM - 2:00 PM\n\n📅 Sunday:\nClosed (except emergencies)\n\n🚨 24/7 Emergencies:\nEvery day, day and night\n\n💬 CUSTOMER SUPPORT:\n\n📧 Support email:\nsupport@tsdetfils.com\nResponse within 2h (office hours)\n\n💬 Online chat:\nOn website\nInstant response\n\n📱 WhatsApp Business:\n+224 610 55 32 55\nResponse within 30 min\n\n📞 Free hotline:\nFree call from Guinea\n\n🗓️ MAKE APPOINTMENT:\n• Via app\n• By phone\n• On website\n• In person at office',
       keywords: ['contact', 'contacter', 'telephone', 'email', 'adresse', 'horaire', 'appeler', 'joindre', 'address', 'phone'],
       category: 'contact',
       relatedTopics: ['urgence', 'rdv'],
@@ -199,8 +199,8 @@ const IntelligentChatbot = ({ darkMode, lang, onClose, currentUser }: ChatbotPro
     const welcomeMessage: ChatMessage = {
       id: Date.now(),
       text: lang === 'fr'
-        ? '👋 Bonjour! Je suis votre assistant intelligent TSD & FILS.\n\n✨ Je peux vous aider avec:\n• Informations sur nos services\n• Demandes de devis\n• Suivi de vos projets\n• Contact et urgences\n• Questions techniques\n\nComment puis-je vous aider aujourd\'hui?'
-        : '👋 Hello! I am your TSD & FILS intelligent assistant.\n\n✨ I can help you with:\n• Service information\n• Quote requests\n• Project tracking\n• Contact and emergencies\n• Technical questions\n\nHow can I help you today?',
+        ? '👋 Bonjour! Je suis votre assistant intelligent TSDFILS SARLU.\n\n✨ Je peux vous aider avec:\n• Informations sur nos services\n• Demandes de devis\n• Suivi de vos projets\n• Contact et urgences\n• Questions techniques\n\nComment puis-je vous aider aujourd\'hui?'
+        : '👋 Hello! I am your TSDFILS SARLU intelligent assistant.\n\n✨ I can help you with:\n• Service information\n• Quote requests\n• Project tracking\n• Contact and emergencies\n• Technical questions\n\nHow can I help you today?',
       isBot: true,
       time: new Date().toLocaleTimeString(lang === 'fr' ? 'fr-FR' : 'en-US', { hour: '2-digit', minute: '2-digit' }),
       category: 'welcome',
