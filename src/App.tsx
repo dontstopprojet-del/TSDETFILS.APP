@@ -1,93 +1,131 @@
 import { useState, useEffect } from 'react';
+import { SplashScreen } from './components/SplashScreen';
+import TSDApp from './components/TSDApp';
+import VisitorHomePage from './components/VisitorHomePage';
+import DevisForm from './components/DevisForm';
+import ContactPage from './components/ContactPage';
+import ClientQuoteTracker from './components/ClientQuoteTracker';
+import { AuthProvider } from './contexts/AuthContext';
 import { supabase } from './lib/supabase';
-import LoginScreen from './components/LoginScreen';
-import ShareholderApp from './components/ShareholderApp';
-import PartnerApp from './components/PartnerApp';
-import AssociateDashboard from './components/AssociateDashboard';
+
+type AppMode = 'visitor' | 'client';
+type VisitorScreen = 'home' | 'devis' | 'contact' | 'track';
 
 function App() {
-  const [session, setSession] = useState<any>(null);
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [showSplash, setShowSplash] = useState(true);
+  const [appMode, setAppMode] = useState<AppMode>('visitor');
+  const [visitorScreen, setVisitorScreen] = useState<VisitorScreen>('home');
   const [darkMode, setDarkMode] = useState(false);
-  const [lang, setLang] = useState('fr');
-  const [loading, setLoading] = useState(true);
+  const [language, setLanguage] = useState<'fr' | 'en' | 'ar'>('fr');
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session?.user) loadUser(session.user.id);
-      else setLoading(false);
-    });
+    const savedDarkMode = localStorage.getItem('darkMode');
+    const savedLanguage = localStorage.getItem('language');
+    const savedAppMode = localStorage.getItem('appMode');
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session?.user) loadUser(session.user.id);
-      else { setCurrentUser(null); setLoading(false); }
-    });
+    if (savedDarkMode) setDarkMode(savedDarkMode === 'true');
+    if (savedLanguage) setLanguage(savedLanguage as 'fr' | 'en' | 'ar');
+    if (savedAppMode) setAppMode(savedAppMode as AppMode);
+  }, []);
 
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsPasswordRecovery(true);
+        setAppMode('client');
+        setShowSplash(false);
+      }
+    });
     return () => subscription.unsubscribe();
   }, []);
 
-  const loadUser = async (userId: string) => {
-    const { data } = await supabase
-      .from('app_users')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle();
-    setCurrentUser(data);
-    setLoading(false);
-  };
+  useEffect(() => {
+    localStorage.setItem('darkMode', String(darkMode));
+    localStorage.setItem('language', language);
+    localStorage.setItem('appMode', appMode);
+  }, [darkMode, language, appMode]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setCurrentUser(null);
-    setSession(null);
-  };
+  if (showSplash) {
+    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+  }
 
-  if (loading) {
+  if (appMode === 'client') {
     return (
-      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f172a' }}>
-        <div style={{ color: '#94a3b8', fontSize: '18px' }}>Chargement...</div>
-      </div>
+      <AuthProvider>
+        <TSDApp onBackToVisitor={() => setAppMode('visitor')} isPasswordRecovery={isPasswordRecovery} />
+      </AuthProvider>
     );
   }
 
-  if (!session || !currentUser) {
-    return <LoginScreen darkMode={darkMode} lang={lang} onLogin={(user: any) => setCurrentUser(user)} />;
-  }
 
-  const role = currentUser.role;
+  const renderVisitorScreen = () => {
+    switch (visitorScreen) {
+      case 'home':
+        return (
+          <VisitorHomePage
+            darkMode={darkMode}
+            lang={language}
+            onNavigateToServices={() => {
+              window.scrollTo({ top: 600, behavior: 'smooth' });
+            }}
+            onNavigateToDevis={() => setVisitorScreen('devis')}
+            onNavigateToContact={() => setVisitorScreen('contact')}
+            onNavigateToTrack={() => setVisitorScreen('track')}
+            onNavigateToLogin={() => setAppMode('client')}
+            onToggleDarkMode={() => setDarkMode(!darkMode)}
+            onChangeLang={(lang) => setLanguage(lang)}
+          />
+        );
 
-  if (role === 'shareholder') {
-    return <ShareholderApp currentUser={currentUser} darkMode={darkMode} setDarkMode={setDarkMode} lang={lang} setLang={setLang} onLogout={handleLogout} />;
-  }
+      case 'devis':
+        return (
+          <DevisForm
+            darkMode={darkMode}
+            lang={language}
+            onSuccess={() => setVisitorScreen('home')}
+            onBack={() => setVisitorScreen('home')}
+          />
+        );
 
-  if (role === 'partner') {
-    return <PartnerApp currentUser={currentUser} darkMode={darkMode} setDarkMode={setDarkMode} lang={lang} setLang={setLang} onLogout={handleLogout} />;
-  }
+      case 'contact':
+        return (
+          <ContactPage
+            darkMode={darkMode}
+            lang={language}
+            onBack={() => setVisitorScreen('home')}
+          />
+        );
 
-  if (role === 'associate') {
-    return <AssociateDashboard currentUser={currentUser} darkMode={darkMode} setDarkMode={setDarkMode} lang={lang} setLang={setLang} onLogout={handleLogout} />;
-  }
+      case 'track':
+        return (
+          <ClientQuoteTracker
+            darkMode={darkMode}
+            lang={language}
+            onBack={() => setVisitorScreen('home')}
+          />
+        );
 
-  if (role === 'admin') {
-    return (
-      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: darkMode ? '#0f172a' : '#f8fafc', gap: '20px' }}>
-        <h1 style={{ color: darkMode ? '#f1f5f9' : '#0f172a', fontSize: '24px' }}>TSDFILS SARLU - Admin</h1>
-        <p style={{ color: darkMode ? '#94a3b8' : '#64748b' }}>Bienvenue {currentUser.name}</p>
-        <button onClick={handleLogout} style={{ padding: '12px 24px', background: '#EF4444', color: '#FFF', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: '600' }}>Deconnexion</button>
-      </div>
-    );
-  }
+      default:
+        return (
+          <VisitorHomePage
+            darkMode={darkMode}
+            lang={language}
+            onNavigateToServices={() => {
+              window.scrollTo({ top: 600, behavior: 'smooth' });
+            }}
+            onNavigateToDevis={() => setVisitorScreen('devis')}
+            onNavigateToContact={() => setVisitorScreen('contact')}
+            onNavigateToTrack={() => setVisitorScreen('track')}
+            onNavigateToLogin={() => setAppMode('client')}
+            onToggleDarkMode={() => setDarkMode(!darkMode)}
+            onChangeLang={(lang) => setLanguage(lang)}
+          />
+        );
+    }
+  };
 
-  // Default for client/tech/office - basic view
-  return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: darkMode ? '#0f172a' : '#f8fafc', gap: '20px' }}>
-      <h1 style={{ color: darkMode ? '#f1f5f9' : '#0f172a', fontSize: '24px' }}>TSDFILS SARLU</h1>
-      <p style={{ color: darkMode ? '#94a3b8' : '#64748b' }}>Bienvenue {currentUser.name} ({role})</p>
-      <button onClick={handleLogout} style={{ padding: '12px 24px', background: '#EF4444', color: '#FFF', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: '600' }}>Deconnexion</button>
-    </div>
-  );
+  return <>{renderVisitorScreen()}</>;
 }
 
 export default App;

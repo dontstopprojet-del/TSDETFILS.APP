@@ -156,10 +156,6 @@ const AccountManager = ({ lang, darkMode, onClose }: AccountManagerProps) => {
         updateData.contract_number = editForm.contract_number;
       }
 
-      if (editForm.role === 'shareholder' || editForm.role === 'partner') {
-        updateData.contract_number = editForm.contract_number;
-      }
-
       const { error } = await supabase
         .from('app_users')
         .update(updateData)
@@ -182,8 +178,6 @@ const AccountManager = ({ lang, darkMode, onClose }: AccountManagerProps) => {
       case 'tech': return t.tech;
       case 'office': return t.office;
       case 'admin': return t.admin;
-      case 'shareholder': return lang === 'fr' ? 'Actionnaire' : 'Shareholder';
-      case 'partner': return lang === 'fr' ? 'Partenaire' : 'Partner';
       default: return role;
     }
   };
@@ -306,12 +300,6 @@ const AccountManager = ({ lang, darkMode, onClose }: AccountManagerProps) => {
                         )}
                         {user.role === 'admin' && (
                           <span style={{ marginLeft: '8px', fontSize: '16px' }} title={lang === 'fr' ? 'Administrateur' : 'Administrator'}>👑</span>
-                        )}
-                        {user.role === 'shareholder' && (
-                          <span style={{ marginLeft: '8px', fontSize: '16px' }} title={lang === 'fr' ? 'Actionnaire' : 'Shareholder'}>📊</span>
-                        )}
-                        {user.role === 'partner' && (
-                          <span style={{ marginLeft: '8px', fontSize: '16px' }} title={lang === 'fr' ? 'Partenaire' : 'Partner'}>🤝</span>
                         )}
                       </td>
                       <td style={{ padding: '12px', color: darkMode ? '#FFF' : '#2C3E50' }}>{user.email}</td>
@@ -443,8 +431,6 @@ const AccountManager = ({ lang, darkMode, onClose }: AccountManagerProps) => {
                   <option value="tech">{t.tech}</option>
                   <option value="office">{t.office}</option>
                   <option value="admin">{t.admin}</option>
-                  <option value="shareholder">{lang === 'fr' ? 'Actionnaire' : 'Shareholder'}</option>
-                  <option value="partner">{lang === 'fr' ? 'Partenaire' : 'Partner'}</option>
                 </select>
               </div>
 
@@ -622,36 +608,6 @@ const AccountManager = ({ lang, darkMode, onClose }: AccountManagerProps) => {
                     </select>
                   </div>
                 </>
-              )}
-
-              {(editForm.role === 'shareholder' || editForm.role === 'partner') && (
-                <div style={{ marginBottom: '15px' }}>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '8px',
-                    color: darkMode ? '#FFF' : '#2C3E50',
-                    fontSize: '14px',
-                    fontWeight: '600'
-                  }}>
-                    {t.contract}
-                  </label>
-                  <input
-                    type="text"
-                    value={editForm.contract_number}
-                    onChange={(e) => setEditForm({ ...editForm, contract_number: e.target.value.toUpperCase() })}
-                    placeholder={editForm.role === 'shareholder' ? 'ATSD-JJ-MM-AAAA-AMR6' : 'PTSD-JJ-MM-AAAA-PMER6'}
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      borderRadius: '8px',
-                      border: `1px solid ${darkMode ? '#333' : '#E0E0E0'}`,
-                      background: darkMode ? '#2a2a3e' : '#FFF',
-                      color: darkMode ? '#FFF' : '#2C3E50',
-                      fontSize: '14px',
-                      outline: 'none'
-                    }}
-                  />
-                </div>
               )}
             </div>
 

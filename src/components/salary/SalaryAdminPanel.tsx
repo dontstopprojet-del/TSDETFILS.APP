@@ -409,7 +409,7 @@ export default function SalaryAdminPanel({ darkMode }: Props) {
     const emp = fiche.employe;
     const retenue = fiche.retenue_18_pourcent || fiche.salaire_brut * 0.18;
     const content = `
-FICHE DE PAIE - TSDFILS SARLU
+FICHE DE PAIE - TSD & Fils
 ===========================
 Employe        : ${emp?.name || 'N/A'}
 Poste          : ${emp?.role || 'N/A'}

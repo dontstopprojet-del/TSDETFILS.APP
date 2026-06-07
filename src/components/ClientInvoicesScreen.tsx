@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactElement } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { safeLocale, safeDate } from '../utils/safeFormat';
 
@@ -8,7 +8,7 @@ interface ClientInvoicesScreenProps {
   lang: string;
   colors: any;
   onBack: () => void;
-  Nav: () => ReactElement;
+  Nav: () => JSX.Element;
 }
 
 export default function ClientInvoicesScreen({ currentUser, lang, colors: C, onBack, Nav }: ClientInvoicesScreenProps) {

@@ -74,7 +74,7 @@ const VisitorHomePage: React.FC<VisitorHomePageProps> = ({
 
   const texts = {
     fr: {
-      companyName: 'TSDFILS SARLU',
+      companyName: 'TSD & FILS',
       tagline: "L'EXPERTISE PROFESSIONNELLE EN PLOMBERIE SANITAIRE",
       heroTitle: 'L\'Excellence Européenne au Service de la Guinée',
       heroSubtitle: 'Plomberie professionnelle, installation sanitaire et chauffe-eau avec plus de 6 ans d\'expérience acquise en Belgique.',
@@ -133,7 +133,7 @@ const VisitorHomePage: React.FC<VisitorHomePageProps> = ({
       chatWithUs: 'Discuter avec nous',
     },
     en: {
-      companyName: 'TSDFILS SARLU',
+      companyName: 'TSD & SONS',
       tagline: 'PROFESSIONAL EXPERTISE IN PLUMBING',
       heroTitle: 'European Excellence Serving Guinea',
       heroSubtitle: 'Professional plumbing, sanitary installation and water heaters with over 7 years of experience acquired in Belgium.',
@@ -747,7 +747,7 @@ const VisitorHomePage: React.FC<VisitorHomePageProps> = ({
               letterSpacing: '1px',
               lineHeight: '1.3',
             }}>
-              TSDFILS SARLU
+              TSD & FILS
             </div>
             <div style={{
               fontSize: '10px',
