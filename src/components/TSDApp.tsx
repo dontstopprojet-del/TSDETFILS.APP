@@ -1151,7 +1151,7 @@ const TSDApp = ({ onBackToVisitor, isPasswordRecovery }: { onBackToVisitor?: () 
             </div>
             <p style={{color:'rgba(255,255,255,0.9)',fontSize:'12px',margin:'0 0 10px'}}>{lang==='fr'?'Assistance disponible 24/7':'24/7 assistance available'}</p>
             <a href="tel:+224610553255" style={{display:'block',background:'#FFF',borderRadius:'12px',padding:'12px',marginBottom:'8px',textDecoration:'none',textAlign:'center'}}><span style={{color:C.danger,fontWeight:'bold',fontSize:'16px'}}>📞 +224 610 55 32 55</span></a>
-            <a href="mailto:contact@TSDFILS.com" style={{display:'block',background:'rgba(255,255,255,0.2)',borderRadius:'12px',padding:'10px',textDecoration:'none',textAlign:'center'}}><span style={{color:'#FFF',fontSize:'13px'}}>✉️ contact@TSDFILS.com</span></a>
+            <a href="mailto:contact@tsdetfils.com" style={{display:'block',background:'rgba(255,255,255,0.2)',borderRadius:'12px',padding:'10px',textDecoration:'none',textAlign:'center'}}><span style={{color:'#FFF',fontSize:'13px'}}>✉️ contact@tsdetfils.com</span></a>
           </div>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'12px'}}>
             <button onClick={()=>setScreen('devis')} style={{background:C.secondary,border:'none',borderRadius:'16px',padding:'25px',cursor:'pointer'}}><div style={{fontSize:'32px',marginBottom:'8px'}}>📋</div><div style={{color:'#FFF',fontWeight:'bold',fontSize:'13px'}}>{t.requestQuote}</div></button>
@@ -2413,9 +2413,9 @@ const TSDApp = ({ onBackToVisitor, isPasswordRecovery }: { onBackToVisitor?: () 
                   <span style={{fontSize:'24px'}}>📞</span>
                   <div><p style={{margin:0,fontSize:'14px',fontWeight:'600',color:C.text}}>+224 610 55 32 55</p><p style={{margin:'2px 0 0',fontSize:'12px',color:C.textSecondary}}>{lang==='fr'?'Lun-Sam: 8h-18h':'Mon-Sat: 8am-6pm'}</p></div>
                 </a>
-                <a href="mailto:contact@TSDFILS.com" style={{display:'flex',alignItems:'center',gap:'12px',padding:'14px',background:C.light,borderRadius:'12px',textDecoration:'none'}}>
+                <a href="mailto:contact@tsdetfils.com" style={{display:'flex',alignItems:'center',gap:'12px',padding:'14px',background:C.light,borderRadius:'12px',textDecoration:'none'}}>
                   <span style={{fontSize:'24px'}}>📧</span>
-                  <div><p style={{margin:0,fontSize:'14px',fontWeight:'600',color:C.text}}>contact@TSDFILS.com</p><p style={{margin:'2px 0 0',fontSize:'12px',color:C.textSecondary}}>{lang==='fr'?'Réponse sous 24-48h':'Response within 24-48h'}</p></div>
+                  <div><p style={{margin:0,fontSize:'14px',fontWeight:'600',color:C.text}}>contact@tsdetfils.com</p><p style={{margin:'2px 0 0',fontSize:'12px',color:C.textSecondary}}>{lang==='fr'?'Réponse sous 24-48h':'Response within 24-48h'}</p></div>
                 </a>
                 <div style={{display:'flex',alignItems:'center',gap:'12px',padding:'14px',background:C.light,borderRadius:'12px'}}>
                   <span style={{fontSize:'24px'}}>📍</span>
@@ -2485,7 +2485,7 @@ const TSDApp = ({ onBackToVisitor, isPasswordRecovery }: { onBackToVisitor?: () 
         {q:'Puis-je annuler un rendez-vous?',a:'Oui, gratuitement jusqu\'à 24h avant. Après, des frais de 50 000 GNF s\'appliquent.'},
         {q:'Comment suivre mon intervention?',a:'Dans l\'onglet Suivi, vous pouvez voir l\'état de vos chantiers en temps réel avec photos.'},
         {q:'Quelle est la garantie sur les travaux?',a:'Garantie décennale sur le gros oeuvre, 2 ans sur les installations sanitaires, 1 an sur les réparations.'},
-        {q:'Comment contacter le support?',a:'Par téléphone au +224 610 55 32 55, par email à contact@TSDFILS.com, ou via le chatbot de l\'application.'},
+        {q:'Comment contacter le support?',a:'Par téléphone au +224 610 55 32 55, par email à contact@tsdetfils.com, ou via le chatbot de l\'application.'},
         {q:'Les devis sont-ils gratuits?',a:'Oui, le diagnostic et le devis sont gratuits. Seul le déplacement peut être facturé pour les zones éloignées.'},
       ] : [
         {q:'How to book an appointment?',a:'Go to the Booking tab, select a service, choose a date and time slot, then confirm your reservation.'},
@@ -2494,7 +2494,7 @@ const TSDApp = ({ onBackToVisitor, isPasswordRecovery }: { onBackToVisitor?: () 
         {q:'Can I cancel an appointment?',a:'Yes, free of charge up to 24h before. After that, a 50,000 GNF fee applies.'},
         {q:'How to track my intervention?',a:'In the Tracking tab, you can see your site status in real-time with photos.'},
         {q:'What warranty is offered on work?',a:'10-year warranty on major works, 2 years on sanitary installations, 1 year on repairs.'},
-        {q:'How to contact support?',a:'By phone at +224 610 55 32 55, by email at contact@TSDFILS.com, or via the app chatbot.'},
+        {q:'How to contact support?',a:'By phone at +224 610 55 32 55, by email at contact@tsdetfils.com, or via the app chatbot.'},
         {q:'Are quotes free?',a:'Yes, diagnosis and quotes are free. Only travel may be charged for remote areas.'},
       ];
 
@@ -2568,8 +2568,8 @@ const TSDApp = ({ onBackToVisitor, isPasswordRecovery }: { onBackToVisitor?: () 
                 : `${companyInfo.name || 'TSDFILS'} specializes in plumbing, installation, and maintenance services. We offer quality solutions to our clients.`);
             } else if (userQuestion.includes('contact') || userQuestion.includes('téléphone') || userQuestion.includes('phone') || userQuestion.includes('email')) {
               response = lang === 'fr'
-                ? `Vous pouvez nous contacter par téléphone au +224 610 55 32 55 ou par email à contact@TSDFILS.com.`
-                : `You can contact us by phone at +224 610 55 32 55 or by email at contact@TSDFILS.com.`;
+                ? `Vous pouvez nous contacter par téléphone au +224 610 55 32 55 ou par email à contact@tsdetfils.com.`
+                : `You can contact us by phone at +224 610 55 32 55 or by email at contact@tsdetfils.com.`;
             } else if (userQuestion.includes('prix') || userQuestion.includes('tarif') || userQuestion.includes('price') || userQuestion.includes('cost')) {
               response = lang === 'fr'
                 ? `Pour obtenir un devis personnalisé, veuillez nous contacter au +224 610 55 32 55 ou utiliser notre formulaire de demande de devis dans l'application.`
@@ -3610,8 +3610,8 @@ const TSDApp = ({ onBackToVisitor, isPasswordRecovery }: { onBackToVisitor?: () 
                 : `${companyInfo.name || 'TSDFILS'} specializes in plumbing, installation, and maintenance services. We offer quality solutions to our clients.`);
             } else if (userQuestion.includes('contact') || userQuestion.includes('téléphone') || userQuestion.includes('phone') || userQuestion.includes('email')) {
               response = lang === 'fr'
-                ? `Vous pouvez contacter le support au +224 610 55 32 56 ou l'administration à contact@TSDFILS.com.`
-                : `You can contact support at +224 610 55 32 56 or administration at contact@TSDFILS.com.`;
+                ? `Vous pouvez contacter le support au +224 610 55 32 56 ou l'administration à contact@tsdetfils.com.`
+                : `You can contact support at +224 610 55 32 56 or administration at contact@tsdetfils.com.`;
             } else if (userQuestion.includes('paie') || userQuestion.includes('salaire') || userQuestion.includes('payment') || userQuestion.includes('salary')) {
               response = lang === 'fr'
                 ? `Les paiements sont effectués le 5 de chaque mois. Vous recevez 70% du montant facturé.`

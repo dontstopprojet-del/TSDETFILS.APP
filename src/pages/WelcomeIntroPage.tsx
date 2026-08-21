@@ -527,7 +527,7 @@ const WelcomeIntroPage = ({ lang, darkMode, onComplete, user, role }: WelcomeInt
               margin: 0,
               fontSize: '13px'
             }}>
-              ✉️ <a href="mailto:contact@TSDFILS.com" style={{ color: 'rgba(255,255,255,0.9)', textDecoration: 'none' }}>contact@TSDFILS.com</a>
+              ✉️ <a href="mailto:contact@tsdetfils.com" style={{ color: 'rgba(255,255,255,0.9)', textDecoration: 'none' }}>contact@tsdetfils.com</a>
             </p>
           </div>
         </div>

@@ -1677,10 +1677,10 @@ const handleForgotPassword = async (e: React.FormEvent) => {
             margin: 0,
             fontSize: '13px'
           }}>
-            ✉️ <a href="mailto:contact@TSDFILS.com" style={{
+            ✉️ <a href="mailto:contact@tsdetfils.com" style={{
               color: 'rgba(255,255,255,0.9)',
               textDecoration: 'none'
-            }}>contact@TSDFILS.com</a>
+            }}>contact@tsdetfils.com</a>
           </p>
         </div>
       </div>
