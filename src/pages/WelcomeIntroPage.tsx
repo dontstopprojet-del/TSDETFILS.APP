@@ -22,7 +22,7 @@ const WelcomeIntroPage = ({ lang, darkMode, onComplete, user, role }: WelcomeInt
       switch (role) {
         case 'client':
           return {
-            title: "Bienvenue chez TSD et Fils",
+            title: "Bienvenue chez TSDFILS",
             subtitle: "L'Excellence Européenne au Service de la Guinée",
             greeting: `Bonjour ${userName}`,
             intro: "Nous sommes ravis de vous compter parmi nos clients. Votre satisfaction est notre priorité.",
@@ -41,7 +41,7 @@ const WelcomeIntroPage = ({ lang, darkMode, onComplete, user, role }: WelcomeInt
         case 'tech':
           return {
             title: "Espace Technicien",
-            subtitle: "TSD et Fils - Gestion des Chantiers",
+            subtitle: "TSDFILS - Gestion des Chantiers",
             greeting: `Bienvenue ${userName}`,
             intro: "Votre espace professionnel pour gérer efficacement vos missions et chantiers au quotidien.",
             section1: "📍 Vos Chantiers",
@@ -59,7 +59,7 @@ const WelcomeIntroPage = ({ lang, darkMode, onComplete, user, role }: WelcomeInt
         case 'office':
           return {
             title: "Espace Bureau",
-            subtitle: "TSD et Fils - Administration",
+            subtitle: "TSDFILS - Administration",
             greeting: `Bonjour ${userName}`,
             intro: "Bienvenue dans votre espace de gestion administrative et coordination des opérations.",
             section1: "📊 Tableau de Bord",
@@ -77,9 +77,9 @@ const WelcomeIntroPage = ({ lang, darkMode, onComplete, user, role }: WelcomeInt
         case 'admin':
           return {
             title: "Espace Administrateur",
-            subtitle: "TSD et Fils - Administration Complète",
+            subtitle: "TSDFILS - Administration Complète",
             greeting: `Bienvenue ${userName}`,
-            intro: "Accès complet à tous les outils de gestion et d'administration de TSD et Fils.",
+            intro: "Accès complet à tous les outils de gestion et d'administration de TSDFILS.",
             section1: "🎯 Gestion Globale",
             section1Text: "Vue d'ensemble complète de l'entreprise : projets, équipes, finances, et tous les indicateurs de performance en temps réel.",
             section2: "👥 Utilisateurs",
@@ -89,12 +89,12 @@ const WelcomeIntroPage = ({ lang, darkMode, onComplete, user, role }: WelcomeInt
             section4: "⚙️ Configuration",
             section4Text: "Paramétrez l'application, gérez les services, tarifs, zones d'intervention et tous les aspects techniques de la plateforme.",
             ready: "Administration complète",
-            readyText: "Tous les outils nécessaires pour piloter TSD et Fils et prendre les décisions stratégiques.",
+            readyText: "Tous les outils nécessaires pour piloter TSDFILS et prendre les décisions stratégiques.",
             button: "Accéder au panneau admin"
           };
         default:
           return {
-            title: "Bienvenue chez TSD et Fils",
+            title: "Bienvenue chez TSDFILS",
             subtitle: "L'Excellence Européenne au Service de la Guinée",
             greeting: `Bonjour ${userName}`,
             intro: "Nous sommes ravis de vous accueillir.",
@@ -115,7 +115,7 @@ const WelcomeIntroPage = ({ lang, darkMode, onComplete, user, role }: WelcomeInt
       switch (role) {
         case 'client':
           return {
-            title: "Welcome to TSD et Fils",
+            title: "Welcome to TSDFILS",
             subtitle: "European Excellence at Guinea's Service",
             greeting: `Hello ${userName}`,
             intro: "We are delighted to have you as our client. Your satisfaction is our priority.",
@@ -134,7 +134,7 @@ const WelcomeIntroPage = ({ lang, darkMode, onComplete, user, role }: WelcomeInt
         case 'tech':
           return {
             title: "Technician Area",
-            subtitle: "TSD et Fils - Site Management",
+            subtitle: "TSDFILS - Site Management",
             greeting: `Welcome ${userName}`,
             intro: "Your professional space to efficiently manage your daily missions and sites.",
             section1: "📍 Your Sites",
@@ -152,7 +152,7 @@ const WelcomeIntroPage = ({ lang, darkMode, onComplete, user, role }: WelcomeInt
         case 'office':
           return {
             title: "Office Area",
-            subtitle: "TSD et Fils - Administration",
+            subtitle: "TSDFILS - Administration",
             greeting: `Hello ${userName}`,
             intro: "Welcome to your administrative management and operations coordination space.",
             section1: "📊 Dashboard",
@@ -170,9 +170,9 @@ const WelcomeIntroPage = ({ lang, darkMode, onComplete, user, role }: WelcomeInt
         case 'admin':
           return {
             title: "Administrator Area",
-            subtitle: "TSD et Fils - Full Administration",
+            subtitle: "TSDFILS - Full Administration",
             greeting: `Welcome ${userName}`,
-            intro: "Complete access to all TSD et Fils management and administration tools.",
+            intro: "Complete access to all TSDFILS management and administration tools.",
             section1: "🎯 Global Management",
             section1Text: "Complete company overview: projects, teams, finances, and all real-time performance indicators.",
             section2: "👥 Users",
@@ -182,12 +182,12 @@ const WelcomeIntroPage = ({ lang, darkMode, onComplete, user, role }: WelcomeInt
             section4: "⚙️ Configuration",
             section4Text: "Configure the application, manage services, rates, coverage areas, and all technical aspects of the platform.",
             ready: "Complete administration",
-            readyText: "All the tools needed to manage TSD et Fils and make strategic decisions.",
+            readyText: "All the tools needed to manage TSDFILS and make strategic decisions.",
             button: "Access admin panel"
           };
         default:
           return {
-            title: "Welcome to TSD et Fils",
+            title: "Welcome to TSDFILS",
             subtitle: "European Excellence at Guinea's Service",
             greeting: `Hello ${userName}`,
             intro: "We are delighted to welcome you.",
@@ -527,7 +527,7 @@ const WelcomeIntroPage = ({ lang, darkMode, onComplete, user, role }: WelcomeInt
               margin: 0,
               fontSize: '13px'
             }}>
-              ✉️ <a href="mailto:contact@tsdetfils.com" style={{ color: 'rgba(255,255,255,0.9)', textDecoration: 'none' }}>contact@tsdetfils.com</a>
+              ✉️ <a href="mailto:contact@TSDFILS.com" style={{ color: 'rgba(255,255,255,0.9)', textDecoration: 'none' }}>contact@TSDFILS.com</a>
             </p>
           </div>
         </div>

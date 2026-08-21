@@ -74,7 +74,7 @@ const VisitorHomePage: React.FC<VisitorHomePageProps> = ({
 
   const texts = {
     fr: {
-      companyName: 'TSD & FILS',
+      companyName: 'TSDFILS',
       tagline: "L'EXPERTISE PROFESSIONNELLE EN PLOMBERIE SANITAIRE",
       heroTitle: 'L\'Excellence Européenne au Service de la Guinée',
       heroSubtitle: 'Plomberie professionnelle, installation sanitaire et chauffe-eau avec plus de 6 ans d\'expérience acquise en Belgique.',
@@ -747,7 +747,7 @@ const VisitorHomePage: React.FC<VisitorHomePageProps> = ({
               letterSpacing: '1px',
               lineHeight: '1.3',
             }}>
-              TSD & FILS
+              TSDFILS
             </div>
             <div style={{
               fontSize: '10px',

@@ -306,7 +306,7 @@ const ContactPage: React.FC<ContactPageProps> = ({
 
             <div style={infoItemStyle}>
               <div style={infoLabelStyle}>{t.emailLabel}</div>
-              <div style={infoValueStyle}>contact@tsdetfils.com</div>
+              <div style={infoValueStyle}>contact@TSDFILS.com</div>
             </div>
 
             <div style={infoItemStyle}>

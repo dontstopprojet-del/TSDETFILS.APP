@@ -65,7 +65,7 @@ const Logo: React.FC<LogoProps> = ({ size = 'medium', variant = 'horizontal', da
           letterSpacing: '0.5px',
           lineHeight: '1.1',
         }}>
-          TSD & FILS
+          TSDFILS
         </span>
         <span style={{
           fontSize: Math.max(currentSize.fontSize * 0.5, 9),

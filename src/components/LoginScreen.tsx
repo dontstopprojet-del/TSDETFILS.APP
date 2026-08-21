@@ -169,7 +169,7 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
       if (!contractSignatureDate && role !== 'admin') throw new Error(getText('Veuillez entrer la date de signature du contrat', 'Please enter the contract signature date', 'الرجاء إدخال تاريخ توقيع العقد'));
       if (role === 'client' && !city.trim()) throw new Error(getText('La ville de résidence est obligatoire pour les clients', 'City of residence is required for clients', 'مدينة الإقامة مطلوبة للعملاء'));
       if ((role === 'client' || role === 'tech') && !contractNumber.trim()) throw new Error(getText('Le numéro de contrat est obligatoire', 'Contract number is required', 'رقم العقد مطلوب'));
-      if (role === 'admin' && !cleanEmail.endsWith('@tsdetfils.com')) throw new Error(getText('Les administrateurs doivent utiliser un email @tsdetfils.com', 'Administrators must use a @tsdetfils.com email', 'يجب على المسؤولين استخدام بريد إلكتروني @tsdetfils.com'));
+      if (role === 'admin' && !cleanEmail.endsWith('@TSDFILS.com')) throw new Error(getText('Les administrateurs doivent utiliser un email @TSDFILS.com', 'Administrators must use a @TSDFILS.com email', 'يجب على المسؤولين استخدام بريد إلكتروني @TSDFILS.com'));
       if (role === 'admin' && !createdDate) throw new Error(getText('La date de création est obligatoire', 'Creation date is required', 'تاريخ الإنشاء مطلوب'));
       if (role === 'admin' && !mad.trim()) throw new Error(getText('Le champ MAD est obligatoire', 'MAD field is required', 'حقل MAD مطلوب'));
       if (role === 'admin' && !creationLocation.trim()) throw new Error(getText('Le lieu de création est obligatoire', 'Creation location is required', 'مكان الإنشاء مطلوب'));
@@ -705,7 +705,7 @@ const handleForgotPassword = async (e: React.FormEvent) => {
             textShadow: '0 4px 20px rgba(0,0,0,0.4)',
             letterSpacing: '2px'
           }}>
-          TSD et Fils
+          TSDFILS
         </h1>
         <p style={{
           color: 'rgba(255,255,255,0.95)',
@@ -1677,10 +1677,10 @@ const handleForgotPassword = async (e: React.FormEvent) => {
             margin: 0,
             fontSize: '13px'
           }}>
-            ✉️ <a href="mailto:contact@tsdetfils.com" style={{
+            ✉️ <a href="mailto:contact@TSDFILS.com" style={{
               color: 'rgba(255,255,255,0.9)',
               textDecoration: 'none'
-            }}>contact@tsdetfils.com</a>
+            }}>contact@TSDFILS.com</a>
           </p>
         </div>
       </div>

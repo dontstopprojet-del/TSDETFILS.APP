@@ -20,7 +20,7 @@ const i18n = {
     thisMonth: 'Ce mois', thisYear: 'Cette annee', perProject: 'Par Projet',
     settings: 'Parametres', legalDocs: 'Documents Legaux', faq: 'FAQ', logout: 'Deconnexion',
     darkMode: 'Mode Sombre', language: 'Langue', back: 'Retour', sign: 'Signer le document',
-    signedOn: 'Signe le', company: 'TSD ET FILS', subtitle: 'Espace Partenaire', role: 'Partenaire',
+    signedOn: 'Signe le', company: 'TSDFILS', subtitle: 'Espace Partenaire', role: 'Partenaire',
     gnf: 'GNF', active: 'Actif', completed: 'Termine', inactive: 'Inactif',
   },
   en: {
@@ -31,7 +31,7 @@ const i18n = {
     thisMonth: 'This Month', thisYear: 'This Year', perProject: 'Per Project',
     settings: 'Settings', legalDocs: 'Legal Documents', faq: 'FAQ', logout: 'Logout',
     darkMode: 'Dark Mode', language: 'Language', back: 'Back', sign: 'Sign document',
-    signedOn: 'Signed on', company: 'TSD ET FILS', subtitle: 'Partner Portal', role: 'Partner',
+    signedOn: 'Signed on', company: 'TSDFILS', subtitle: 'Partner Portal', role: 'Partner',
     gnf: 'GNF', active: 'Active', completed: 'Completed', inactive: 'Inactive',
   }
 };
@@ -50,8 +50,8 @@ const legalDocs = [
 
 const legalTexts: Record<string, string[]> = {
   partnership: [
-    "Cet accord etablit les termes et conditions de la relation commerciale entre TSD ET FILS et le partenaire.",
-    "Le partenaire accepte de respecter tous les droits de propriete intellectuelle de TSD ET FILS.",
+    "Cet accord etablit les termes et conditions de la relation commerciale entre TSDFILS et le partenaire.",
+    "Le partenaire accepte de respecter tous les droits de propriete intellectuelle de TSDFILS.",
     "Duree du partenariat: reconductible annuellement par accord mutuel des deux parties.",
     "Obligations mutuelles de bonne foi et de cooperation dans l'execution du contrat.",
     "Clause de revision annuelle des termes et conditions du partenariat.",
@@ -59,7 +59,7 @@ const legalTexts: Record<string, string[]> = {
   ],
   confidentiality: [
     "Confidentialite stricte de toutes les informations echangees dans le cadre du partenariat.",
-    "Interdiction de divulgation a des tiers sans accord prealable ecrit de TSD ET FILS.",
+    "Interdiction de divulgation a des tiers sans accord prealable ecrit de TSDFILS.",
     "Duree de l'obligation de confidentialite: 5 ans apres la fin du partenariat.",
     "Protection speciale des donnees commerciales, techniques et financieres.",
     "Sanctions contractuelles en cas de manquement a l'obligation de confidentialite.",
@@ -70,7 +70,7 @@ const legalTexts: Record<string, string[]> = {
     "Restriction geographique: territoire de la Republique de Guinee et pays limitrophes.",
     "Duree post-contrat: 18 mois apres cessation du partenariat.",
     "Definition precise des activites concurrentes interdites au partenaire.",
-    "Clause de non-sollicitation des clients de TSD ET FILS pendant 2 ans.",
+    "Clause de non-sollicitation des clients de TSDFILS pendant 2 ans.",
     "Indemnite compensatrice en cas de restriction excessive de liberte commerciale.",
   ],
   data_protection: [
@@ -125,10 +125,10 @@ const legalTexts: Record<string, string[]> = {
 
 const faqData = [
   { q: { fr: "Comment fonctionne le partage des revenus ?", en: "How does revenue sharing work?" }, a: { fr: "Les revenus sont partages selon le pourcentage defini dans votre contrat de partenariat. Le versement est effectue dans les 30 jours suivant la facturation de chaque projet.", en: "Revenue is shared according to the percentage defined in your partnership contract. Payment is made within 30 days of each project's invoicing." }},
-  { q: { fr: "Comment sont attribues les projets ?", en: "How are projects assigned?" }, a: { fr: "Les projets sont attribues en fonction des competences, de la disponibilite et des termes de votre accord de partenariat avec TSD ET FILS.", en: "Projects are assigned based on skills, availability, and the terms of your partnership agreement with TSD ET FILS." }},
+  { q: { fr: "Comment sont attribues les projets ?", en: "How are projects assigned?" }, a: { fr: "Les projets sont attribues en fonction des competences, de la disponibilite et des termes de votre accord de partenariat avec TSDFILS.", en: "Projects are assigned based on skills, availability, and the terms of your partnership agreement with TSDFILS." }},
   { q: { fr: "Quelles sont mes responsabilites ?", en: "What are my responsibilities?" }, a: { fr: "Vous etes responsable de la qualite des prestations, du respect des delais, de la confidentialite et du respect des clauses de votre contrat.", en: "You are responsible for service quality, meeting deadlines, confidentiality, and compliance with your contract clauses." }},
   { q: { fr: "Comment resilier le partenariat ?", en: "How do I terminate the partnership?" }, a: { fr: "La resiliation est possible avec un preavis de 3 mois. En cas de faute grave, la resiliation peut etre immediate. Consultez la clause de resiliation.", en: "Termination is possible with 3 months notice. In case of serious breach, immediate termination applies. See the termination clause." }},
-  { q: { fr: "Qui contacter en cas de probleme ?", en: "Who do I contact for issues?" }, a: { fr: "Contactez directement le siege social de TSD ET FILS ou votre referent partenariat. Tous les documents sont accessibles dans votre espace.", en: "Contact TSD ET FILS headquarters or your partnership representative. All documents are accessible in your portal." }},
+  { q: { fr: "Qui contacter en cas de probleme ?", en: "Who do I contact for issues?" }, a: { fr: "Contactez directement le siege social de TSDFILS ou votre referent partenariat. Tous les documents sont accessibles dans votre espace.", en: "Contact TSDFILS headquarters or your partnership representative. All documents are accessible in your portal." }},
 ];
 
 export default function PartnerApp({ currentUser, darkMode, setDarkMode, lang, setLang, onLogout }: PartnerAppProps) {

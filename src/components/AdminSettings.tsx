@@ -28,9 +28,9 @@ Conformément à la réglementation, nous nous engageons à protéger vos donné
 TSDFILSs'efforce de fournir des informations exactes, mais ne peut garantir l'exactitude complète des données affichées.
 
 5. CONTACT
-Pour toute question concernant ces mentions légales, contactez-nous à : contact@tsdetfils.gn`;
+Pour toute question concernant ces mentions légales, contactez-nous à : contact@TSDFILS.gn`;
 
-  const defaultLegalTermsEn = `LEGAL TERMS - TSD ET FILS
+  const defaultLegalTermsEn = `LEGAL TERMS - TSDFILS
 
 1. GENERAL INFORMATION
 TSDFILSis a company specialized in technical and security services in Guinea.
@@ -45,9 +45,9 @@ In accordance with regulations, we are committed to protecting your personal dat
 TSDFILSstrives to provide accurate information but cannot guarantee complete accuracy of displayed data.
 
 5. CONTACT
-For any questions about these legal terms, contact us at: contact@tsdetfils.gn`;
+For any questions about these legal terms, contact us at: contact@TSDFILS.gn`;
 
-  const defaultLegalTermsAr = `الشروط القانونية - TSD ET FILS
+  const defaultLegalTermsAr = `الشروط القانونية - TSDFILS
 
 1. معلومات عامة
 TSDFILSهي شركة متخصصة في الخدمات الفنية والأمنية في غينيا.
@@ -62,13 +62,13 @@ TSDFILSهي شركة متخصصة في الخدمات الفنية والأمن�
 تسعى TSDFILSجاهدة لتقديم معلومات دقيقة ولكن لا يمكنها ضمان الدقة الكاملة للبيانات المعروضة.
 
 5. الاتصال
-لأي أسئلة حول هذه الشروط القانونية، اتصل بنا على: contact@tsdetfils.gn`;
+لأي أسئلة حول هذه الشروط القانونية، اتصل بنا على: contact@TSDFILS.gn`;
 
   const [settings, setSettings] = useState<any>({
     legal_terms_fr: defaultLegalTermsFr,
     legal_terms_en: defaultLegalTermsEn,
     legal_terms_ar: defaultLegalTermsAr,
-    company_name: 'TSD et Fils',
+    company_name: 'TSDFILS',
     company_description: '',
     company_founded: '',
     company_location: '',
@@ -211,7 +211,7 @@ TSDFILSهي شركة متخصصة في الخدمات الفنية والأمن�
           } else if (item.setting_key === 'company_info') {
             try {
               const companyData = JSON.parse(item.setting_value);
-              newSettings.company_name = companyData.name || 'TSD et Fils';
+              newSettings.company_name = companyData.name || 'TSDFILS';
               newSettings.company_description = companyData.description || '';
               newSettings.company_founded = companyData.founded || '';
               newSettings.company_location = companyData.location || '';

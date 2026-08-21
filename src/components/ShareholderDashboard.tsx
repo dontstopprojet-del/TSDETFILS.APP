@@ -21,7 +21,7 @@ const i18n = {
     noShares: 'Aucune action pour le moment', noDividends: 'Aucun dividende disponible',
     settings: 'Parametres', legalDocs: 'Documents Legaux', faq: 'FAQ', logout: 'Deconnexion',
     darkMode: 'Mode Sombre', language: 'Langue', back: 'Retour', sign: 'Signer le document',
-    signedOn: 'Signe le', company: 'TSD ET FILS', subtitle: 'Espace Actionnaire', role: 'Actionnaire',
+    signedOn: 'Signe le', company: 'TSDFILS', subtitle: 'Espace Actionnaire', role: 'Actionnaire',
     metrics: 'Metriques Entreprise', gnf: 'GNF'
   },
   en: {
@@ -33,7 +33,7 @@ const i18n = {
     noShares: 'No shares at this time', noDividends: 'No dividends available',
     settings: 'Settings', legalDocs: 'Legal Documents', faq: 'FAQ', logout: 'Logout',
     darkMode: 'Dark Mode', language: 'Language', back: 'Back', sign: 'Sign document',
-    signedOn: 'Signed on', company: 'TSD ET FILS', subtitle: 'Shareholder Portal', role: 'Shareholder',
+    signedOn: 'Signed on', company: 'TSDFILS', subtitle: 'Shareholder Portal', role: 'Shareholder',
     metrics: 'Company Metrics', gnf: 'GNF'
   }
 };
@@ -51,7 +51,7 @@ const legalDocs = [
 
 const legalTexts: Record<string, string[]> = {
   confidentiality: [
-    "Confidentialite stricte de toutes les informations partagees entre TSD ET FILS et ses actionnaires.",
+    "Confidentialite stricte de toutes les informations partagees entre TSDFILS et ses actionnaires.",
     "Protection des donnees personnelles selon les standards internationaux applicables.",
     "Restriction d'acces aux documents confidentiels aux seules parties autorisees.",
     "Obligation de non-divulgation pour une periode de 5 ans minimum apres cessation.",
@@ -80,7 +80,7 @@ const legalTexts: Record<string, string[]> = {
     "Duree post-mandat: 2 ans apres cessation de fonctions ou cession des parts.",
     "Liste des activites explicitement interdites definie en annexe.",
     "Compensation financiere prevue en cas de non-respect de la clause.",
-    "Clause de non-solicitation des clients et employes de TSD ET FILS.",
+    "Clause de non-solicitation des clients et employes de TSDFILS.",
   ],
   data_protection: [
     "Conformite aux normes de protection des donnees personnelles des actionnaires.",
@@ -121,7 +121,7 @@ const faqData = [
   { q: { fr: "Comment sont distribues les dividendes ?", en: "How are dividends distributed?" }, a: { fr: "Les dividendes sont distribues apres approbation en assemblee generale annuelle. Le paiement s'effectue selon le calendrier etabli par le gerant.", en: "Dividends are distributed after approval at the annual general meeting. Payment follows the schedule set by the manager." }},
   { q: { fr: "Puis-je transferer mes actions ?", en: "Can I transfer my shares?" }, a: { fr: "Oui, sous conditions: notification prealable, droit de preemption des autres actionnaires, et accord du gerant conformement au pacte d'actionnaires.", en: "Yes, subject to conditions: prior notification, pre-emption rights of other shareholders, and manager approval per the shareholder agreement." }},
   { q: { fr: "Comment voter aux assemblees ?", en: "How do I vote at meetings?" }, a: { fr: "Un vote par action detenue. Les scrutins se font en assemblee generale annuelle ou extraordinaire sur convocation du gerant.", en: "One vote per share held. Voting occurs at annual or extraordinary general meetings called by the manager." }},
-  { q: { fr: "Qui contacter en cas de question ?", en: "Who should I contact?" }, a: { fr: "Contactez le siege social de TSD ET FILS ou l'adresse email du gerant. Tous les documents legaux sont disponibles dans votre espace.", en: "Contact TSD ET FILS head office or the manager's email. All legal documents are available in your portal." }},
+  { q: { fr: "Qui contacter en cas de question ?", en: "Who should I contact?" }, a: { fr: "Contactez le siege social de TSDFILS ou l'adresse email du gerant. Tous les documents legaux sont disponibles dans votre espace.", en: "Contact TSDFILS head office or the manager's email. All legal documents are available in your portal." }},
 ];
 
 export default function ShareholderApp({ currentUser, darkMode, setDarkMode, lang, setLang, onLogout }: ShareholderAppProps) {
