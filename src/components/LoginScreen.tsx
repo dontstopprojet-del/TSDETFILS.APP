@@ -33,7 +33,7 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
   const [echelon, setEchelon] = useState('');
   const [status, setStatus] = useState('');
   const [officePosition, setOfficePosition] = useState('');
-  const [city, setCity] = useState('');
+  const [city] = useState('');
   const [createdDate, setCreatedDate] = useState('');
   const [mad, setMad] = useState('');
   const [creationLocation, setCreationLocation] = useState('');
@@ -168,7 +168,7 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
       if (!dateOfBirth) throw new Error(getText('Veuillez entrer votre date de naissance', 'Please enter your date of birth', 'الرجاء إدخال تاريخ ميلادك'));
       if (!contractSignatureDate && role !== 'admin') throw new Error(getText('Veuillez entrer la date de signature du contrat', 'Please enter the contract signature date', 'الرجاء إدخال تاريخ توقيع العقد'));
       if (role === 'client' && !city.trim()) throw new Error(getText('La ville de résidence est obligatoire pour les clients', 'City of residence is required for clients', 'مدينة الإقامة مطلوبة للعملاء'));
-      if ((role === 'client' || role === 'tech') && !contractNumber.trim()) throw new Error(getText('Le numéro de contrat est obligatoire', 'Contract number is required', 'رقم العقد مطلوب'));
+      if (role === 'tech' && !contractNumber.trim()) throw new Error(getText('Le numéro de contrat est obligatoire', 'Contract number is required', 'رقم العقد مطلوب'));
       if (role === 'admin' && !cleanEmail.endsWith('@TSDFILS.com')) throw new Error(getText('Les administrateurs doivent utiliser un email @TSDFILS.com', 'Administrators must use a @TSDFILS.com email', 'يجب على المسؤولين استخدام بريد إلكتروني @TSDFILS.com'));
       if (role === 'admin' && !createdDate) throw new Error(getText('La date de création est obligatoire', 'Creation date is required', 'تاريخ الإنشاء مطلوب'));
       if (role === 'admin' && !mad.trim()) throw new Error(getText('Le champ MAD est obligatoire', 'MAD field is required', 'حقل MAD مطلوب'));
@@ -1170,72 +1170,6 @@ const handleForgotPassword = async (e: React.FormEvent) => {
                 </select>
               </div>
             </>
-          )}
-
-          {isSignUp && role === 'client' && (
-            <div>
-              <label style={{
-                display: 'block',
-                marginBottom: '8px',
-                color: darkMode ? '#FFF' : '#2C3E50',
-                fontSize: '14px',
-                fontWeight: '600'
-              }}>
-                {getText('Ville de résidence *', 'City of residence *', 'مدينة الإقامة *')}
-              </label>
-              <input
-                type="text"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder=""
-                style={{
-                  width: '100%',
-                  padding: '14px',
-                  borderRadius: '12px',
-                  border: darkMode ? '2px solid rgba(255,255,255,0.2)' : '2px solid #E0E0E0',
-                  background: darkMode ? 'rgba(255,255,255,0.1)' : '#FFF',
-                  color: darkMode ? '#FFF' : '#2C3E50',
-                  fontSize: '15px',
-                  outline: 'none',
-                  transition: 'border-color 0.3s'
-                }}
-                onFocus={(e) => e.currentTarget.style.borderColor = '#00D4FF'}
-                onBlur={(e) => e.currentTarget.style.borderColor = darkMode ? 'rgba(255,255,255,0.2)' : '#E0E0E0'}
-              />
-            </div>
-          )}
-
-          {isSignUp && role === 'client' && (
-            <div>
-              <label style={{
-                display: 'block',
-                marginBottom: '8px',
-                color: darkMode ? '#FFF' : '#2C3E50',
-                fontSize: '14px',
-                fontWeight: '600'
-              }}>
-                {getText('Numéro de contrat *', 'Contract Number *', 'رقم العقد *')}
-              </label>
-              <input
-                type="text"
-                value={contractNumber}
-                onChange={(e) => setContractNumber(e.target.value.toUpperCase())}
-                placeholder=""
-                style={{
-                  width: '100%',
-                  padding: '14px',
-                  borderRadius: '12px',
-                  border: darkMode ? '2px solid rgba(255,255,255,0.2)' : '2px solid #E0E0E0',
-                  background: darkMode ? 'rgba(255,255,255,0.1)' : '#FFF',
-                  color: darkMode ? '#FFF' : '#2C3E50',
-                  fontSize: '15px',
-                  outline: 'none',
-                  transition: 'border-color 0.3s'
-                }}
-                onFocus={(e) => e.currentTarget.style.borderColor = '#00D4FF'}
-                onBlur={(e) => e.currentTarget.style.borderColor = darkMode ? 'rgba(255,255,255,0.2)' : '#E0E0E0'}
-              />
-            </div>
           )}
 
           {isSignUp && role === 'tech' && (
