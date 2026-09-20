@@ -134,8 +134,8 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
 
   const sendWelcomeEmail = async () => {
     const response = await fetch(
-      'https://wwzenpgopftcqhhczmni.supabase.co/functions/v1/send-welcome-email',
-      {
+    'https://sfvzcnuhmmsozkiczsiv.supabase.co/functions/v1/send-welcome-email',      
+       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
        body: JSON.stringify({
@@ -218,7 +218,7 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
 
         if (profileError) throw profileError;
 
-        await sendWelcomeEmail();
+        try { await sendWelcomeEmail(); } catch (emailError) { console.warn("Email non envoyé, inscription maintenue", emailError); }
         setShowEmailVerification(true);
       }
     } else {
