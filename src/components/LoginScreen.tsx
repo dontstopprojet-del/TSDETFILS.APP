@@ -33,7 +33,7 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
   const [echelon, setEchelon] = useState('');
   const [status, setStatus] = useState('');
   const [officePosition, setOfficePosition] = useState('');
-  const [city] = useState('');
+  const [city, setCity] = useState('');
   const [createdDate, setCreatedDate] = useState('');
   const [mad, setMad] = useState('');
   const [creationLocation, setCreationLocation] = useState('');
@@ -1264,6 +1264,43 @@ const handleForgotPassword = async (e: React.FormEvent) => {
               </select>
             </div>
           )}
+
+{isSignUp && role === 'client' && (
+  <div>
+    <label style={{
+      display: 'block',
+      marginBottom: '8px',
+      color: darkMode ? '#FFF' : '#2C3E50',
+      fontSize: '14px',
+      fontWeight: '600'
+    }}>
+      {getText('Ville de résidence *', 'City of residence *', 'مدينة الإقامة *')}
+    </label>
+
+    <input
+      type="text"
+      value={city}
+      onChange={(e) => setCity(e.target.value)}
+      placeholder={getText('Ville de résidence', 'City of residence', 'مدينة الإقامة')}
+      style={{
+        width: '100%',
+        padding: '14px',
+        borderRadius: '12px',
+        border: darkMode ? '2px solid rgba(255,255,255,0.2)' : '2px solid #E0E0E0',
+        background: darkMode ? 'rgba(255,255,255,0.1)' : '#FFF',
+        color: darkMode ? '#FFF' : '#2C3E50',
+        fontSize: '15px',
+        outline: 'none',
+        transition: 'border-color 0.3s'
+      }}
+      onFocus={(e) => e.currentTarget.style.borderColor = '#00D4FF'}
+      onBlur={(e) => e.currentTarget.style.borderColor =
+        darkMode ? 'rgba(255,255,255,0.2)' : '#E0E0E0'
+      }
+    />
+  </div>
+)}
+
 
           {isSignUp && role === 'office' && (
             <>
