@@ -164,7 +164,7 @@ const LoginScreen = ({ translations: t, lang, darkMode, onLoginSuccess, onLangua
       }
 
       if (!phone) throw new Error(getText('Veuillez entrer votre numéro de téléphone', 'Please enter your phone number', 'الرجاء إدخال رقم هاتفك'));
-      if (!phone.startsWith('+')) throw new Error(getText('Le numéro doit commencer par un indicatif (ex: +224, +32)', 'Phone number must start with a country code (e.g. +224, +32)', 'يجب أن يبدأ الرقم برمز البلد (مثال: 224+، 32+)'));
+      if (!phone.trim().startsWith('+')) throw new Error(getText('Le numéro doit commencer par un indicatif (ex: +224, +32)', 'Phone number must start with a country code (e.g. +224, +32)', 'يجب أن يبدأ الرقم برمز البلد (مثال: 224+، 32+)'));
       if (!dateOfBirth) throw new Error(getText('Veuillez entrer votre date de naissance', 'Please enter your date of birth', 'الرجاء إدخال تاريخ ميلادك'));
       if (!contractSignatureDate && role !== 'admin' && role !== 'client') throw new Error(getText('Veuillez entrer la date de signature du contrat', 'Please enter the contract signature date', 'الرجاء إدخال تاريخ توقيع العقد'));
       if (role === 'client' && !city.trim()) throw new Error(getText('La ville de résidence est obligatoire pour les clients', 'City of residence is required for clients', 'مدينة الإقامة مطلوبة للعملاء'));
